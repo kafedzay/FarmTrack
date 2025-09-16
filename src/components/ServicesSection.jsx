@@ -2,18 +2,18 @@ import React from 'react';
 
 const ServicesSection = () => {
   return (
-    <section className="bg-green-50 py-12 md:py-20" id="services">
+    <section className="bg-[#fdfcf9] py-12 md:py-20" id="services">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between">
           {/* Text Content */}
           <div className="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
-            <h2 className="text-3xl md:text-4xl font-bold text-green-800 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-[#b58900] mb-4">
               Our Services
             </h2>
-            <p className="text-lg text-gray-600 mb-4">
+            <p className="text-lg text-gray-700 mb-4">
               FarmTrack offers a suite of tools to optimize your farming operations:
             </p>
-            <ul className="text-lg text-gray-600 space-y-2">
+            <ul className="text-lg text-gray-700 space-y-2">
               <li className="flex items-center">
                 <span className="mr-2">🌾</span> Crop Monitoring & Analytics
               </li>
@@ -27,7 +27,7 @@ const ServicesSection = () => {
             <div className="mt-6">
               <a
                 href="#get-started"
-                className="inline-block bg-green-600 text-white font-semibold px-6 py-3 rounded-md hover:bg-green-700 transition-colors duration-200"
+                className="inline-block bg-[#b58900] text-white font-semibold px-6 py-3 rounded-md hover:bg-[#a57800] transition-colors duration-200"
               >
                 Explore Services
               </a>

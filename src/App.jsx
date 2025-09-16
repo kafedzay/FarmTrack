@@ -5,6 +5,7 @@ import AboutSection from './components/AboutSection';
 import ServicesSection from './components/ServicesSection';
 import FeaturesSection from './components/FeaturesSection';
 import ContactSection from './components/ContactSection';
+import LoginSection from './components/LoginSection';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="/services" element={<ServicesSection />} />
           <Route path="/features" element={<FeaturesSection />} />
           <Route path="/contact" element={<ContactSection />} />
+          <Route path="/login" element={<LoginSection />} />
         </Routes>
       </div>
     </Router>
