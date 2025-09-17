@@ -1,5 +1,6 @@
 import React from 'react';
 import heroImage from '../assets/chickslanding.jpg';
+import { Link } from 'react-router-dom';
 
 const HeroSection = () => {
   return (
@@ -15,12 +16,12 @@ const HeroSection = () => {
               Revolutionize your farming with smart tracking and management solutions. Monitor crops, livestock, and resources with ease.
             </p>
             <div className="mt-6">
-              <a
-                href="#get-started"
+              <Link
+                to='/login'
                 className="inline-block bg-[#b58900] text-white font-semibold px-6 py-3 rounded-md hover:bg-[#a57800] transition-colors duration-200"
               >
                 Get Started
-              </a>
+              </Link>
             </div>
           </div>
 

@@ -99,49 +99,156 @@
 
 
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { MdEmail } from "react-icons/md";
+import { FaSquarePhoneFlip } from "react-icons/fa6";
+import { BsFillQuestionOctagonFill } from "react-icons/bs";
+
+// ✅ Simple validation regex
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+const PHONE_REGEX = /^[+]?[\d\s\-().]{6,20}$/; // loose phone validation
 
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  // Local state for the form
+  const [isLogin, setIsLogin] = useState(true);      // toggle login/register
+  const [identifier, setIdentifier] = useState("");  // email or phone input
+  const [password, setPassword] = useState("");      // password input
+  const [detected, setDetected] = useState("unknown"); // "email" | "phone" | "unknown"
+  const [error, setError] = useState("");            // error messages
+  const [message, setMessage] = useState("");        // success messages
+
+  /**
+   * Detect whether user input is an email or phone.
+   */
+  function detectType(value) {
+    if (EMAIL_REGEX.test(value)) return "email";
+    const digits = value.replace(/\D/g, "");
+    if (PHONE_REGEX.test(value) && digits.length >= 7 && digits.length <= 15) {
+      return "phone";
+    }
+    return "unknown";
+  }
+
+  /**
+   * Handle typing in the identifier field.
+   */
+  function handleIdentifierChange(e) {
+    const value = e.target.value;
+    setIdentifier(value);
+    setDetected(detectType(value));
+    setError(""); // clear error on typing
+  }
+
+  /**
+   * Handle form submission (login/register).
+   * This sends data to your backend API.
+   */
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const type = detectType(identifier);
+    if (type === "unknown") {
+      setError("Please enter a valid email or phone number.");
+      return;
+    }
+
+    try {
+      // 👇 Call backend API (adjust URL if deployed)
+      const res = await fetch("", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identifier,
+          identifierType: type,
+          password,
+          isLogin,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Something went wrong");
+
+      setMessage(data.message);
+      setError("");
+    } catch (err) {
+      setError(err.message);
+      setMessage("");
+    }
+  }
 
   return (
     <section className="bg-[#fdfcf9] min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        {/* Title */}
         <h2 className="text-3xl font-bold text-center text-[#b58900] mb-6">
-          {isLogin ? 'Login to FarmTrack' : 'Register for FarmTrack'}
+          {isLogin ? "Login to FarmTrack" : "Register for FarmTrack"}
         </h2>
-        <form className="space-y-4">
+
+        {/* Form */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Show name field only during register */}
           {!isLogin && (
             <input
               type="text"
               placeholder="Full Name"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-[#b58900]"
+              className="w-full border border-gray-300 rounded-md px-4 py-2"
             />
           )}
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-[#b58900]"
-          />
+
+          {/* Identifier input (email or phone) */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Email or Phone"
+              value={identifier}
+              onChange={handleIdentifierChange}
+              className={`w-full border ${
+                error ? "border-red-500" : "border-gray-300"
+              } rounded-md px-4 py-2`}
+            />
+
+            {/* Detection badge (email / phone / ?) */}
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              {detected === "email" && <MdEmail className="text-2xl text-green-400" />}
+              {detected === "phone" && <FaSquarePhoneFlip className="text-2xl text-green-400" />}
+              {detected === "unknown" && <BsFillQuestionOctagonFill className="text-red-400 text-2xl" />}
+            </div>
+          </div>
+
+          {/* Password input */}
           <input
             type="password"
             placeholder="Password"
-            className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-[#b58900]"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-4 py-2"
           />
+
+          {/* Show error/success messages */}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {message && <p className="text-green-600 text-sm">{message}</p>}
+
+          {/* Submit button */}
           <button
             type="submit"
-            className="w-full bg-[#b58900] text-white font-semibold px-4 py-2 rounded-md hover:bg-[#a57800] transition-colors duration-200"
+            className="w-full bg-[#b58900] text-white px-4 py-2 rounded-md hover:bg-[#a57800] transition-colors"
           >
-            {isLogin ? 'Login' : 'Register'}
+            {isLogin ? "Login" : "Register"}
           </button>
         </form>
+
+        {/* Toggle login/register link */}
         <p className="mt-4 text-center text-gray-700">
-          {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
+          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
           <button
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError("");
+              setMessage("");
+            }}
             className="text-[#b58900] font-semibold hover:underline"
           >
-            {isLogin ? 'Register' : 'Login'}
+            {isLogin ? "Register" : "Login"}
           </button>
         </p>
       </div>
