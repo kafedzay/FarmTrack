@@ -6,6 +6,7 @@ import ServicesSection from './components/ServicesSection';
 import FeaturesSection from './components/FeaturesSection';
 import ContactSection from './components/ContactSection';
 import LoginSection from './components/LoginSection';
+import Dashboard from './Pages/Dashboard';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path="/features" element={<FeaturesSection />} />
           <Route path="/contact" element={<ContactSection />} />
           <Route path="/login" element={<LoginSection />} />
+          <Route path='/dashboard' element={<Dashboard/>} />
         </Routes>
       </div>
     </Router>
