@@ -85,7 +85,7 @@ const AuthPage = () => {
           firstname,
           lastname,
           email,
-          phone: phone || undefined, // only send if provided
+          phone: phone || undefined,
           password,
         };
       }
@@ -93,6 +93,13 @@ const AuthPage = () => {
       console.log("📤 Sending payload:", payload);
 
       const res = await axios.post(endpoint, payload);
+
+      // ✅ For login, save JWT token
+      if (isLogin) {
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
+      }
 
       setMessage(res.data.message || "Success!");
 

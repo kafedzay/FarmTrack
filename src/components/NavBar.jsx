@@ -9,7 +9,7 @@ const Navbar = () => {
   const navItems = [
     { name: 'About', icon: Info, href: '/AboutSection' },
     { name: 'Features', icon: Star, href: '/features' },
-    { name: 'Blogs',icon: Info, href: '/LearnSupport' },
+    { name: 'Blogs',icon: Info, href: '/Blogs' },
     { name: 'Contact Us', icon: Phone, href: '/contact' },
     { name: 'Login/Register', icon: User, href: '/login' }, 
   ];
