@@ -99,7 +99,7 @@ const AuthPage = () => {
       let endpoint = "";
 
       if (isLogin) {
-        endpoint = "http://localhost:5500/api/auth/login";
+        endpoint = "https://farmtrack-api.onrender.com/api/auth/login";
         payload = {
           emailOrPhone:
             detected === "phone" ? normalizePhone(emailOrPhone) : emailOrPhone,
