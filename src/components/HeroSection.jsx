@@ -34,6 +34,15 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+      {/* Footer Section */}
+      <footer className="bg-gray-900 text-gray-400 py-6 px-6 md:px-12 text-center">
+        <div className="flex justify-center space-x-6 mb-4">
+          <a href="#" className="hover:text-white transition-colors duration-300">About Us</a>
+          <a href="#" className="hover:text-white transition-colors duration-300">Privacy Policy</a>
+          <a href="#" className="hover:text-white transition-colors duration-300">Terms of Service</a>
+        </div>
+        <p>&copy; 2023 Layer Poultry Hub. All rights reserved.</p>
+      </footer>
     </section>
   );
 };

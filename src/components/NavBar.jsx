@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom'; 
-import { Menu, X, Info, Tractor, Star, Phone, User } from 'lucide-react';
+import { Menu, X, Info, Star, Phone, User } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -8,9 +8,9 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'About', icon: Info, href: '/AboutSection' },
-    { name: 'Services', icon: Tractor, href: '/ServicesSection' },
     { name: 'Features', icon: Star, href: '/features' },
-    { name: 'Contact', icon: Phone, href: '/contact' },
+    { name: 'Blogs',icon: Info, href: '/LearnSupport' },
+    { name: 'Contact Us', icon: Phone, href: '/contact' },
     { name: 'Login/Register', icon: User, href: '/login' }, 
   ];
 
