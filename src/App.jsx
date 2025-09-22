@@ -5,7 +5,7 @@ import AboutSection from './components/AboutSection';
 import FeaturesSection from './components/FeaturesSection';
 import ContactSection from './components/ContactSection';
 import LoginSection from './components/LoginSection';
-import LearnSupport from './components/Blogs';
+import Blogs from './components/Blogs';
 
 function App() {
   return (
@@ -18,7 +18,8 @@ function App() {
           <Route path="/features" element={<FeaturesSection />} />
           <Route path="/contact" element={<ContactSection />} />
           <Route path="/login" element={<LoginSection />} />
-          <Route path="/LearnSupport" element={<LearnSupport />} />
+          <Route path="/Blogs" element={<Blogs />} />
+
         </Routes>
       </div>
     </Router>
