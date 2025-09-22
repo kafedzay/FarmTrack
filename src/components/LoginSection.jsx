@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
-import { FaSquarePhoneFlip } from "react-icons/fa6";
 import { BsFillQuestionOctagonFill } from "react-icons/bs";
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
-// Ghana phone number: +233XXXXXXXXX or 0XXXXXXXXX
+// Ghana phone number: +233XXXXXXXXX or 0XXXXXXXXX (9 digits after prefix)
 const GH_PHONE_REGEX = /^(\+233|0)[0-9]{9}$/;
-// Strong password rule
+// Strong password: min 8 chars, uppercase, lowercase, number, special char
 const PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
 
@@ -18,7 +17,7 @@ const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
-  const [identifier, setIdentifier] = useState(""); // ✅ email or phone
+  const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [detected, setDetected] = useState("unknown");
@@ -28,26 +27,20 @@ const AuthPage = () => {
 
   function detectType(value) {
     if (EMAIL_REGEX.test(value)) return "email";
-    if (GH_PHONE_REGEX.test(value)) return "phone";
     return "unknown";
   }
 
-  function handleIdentifierChange(e) {
+  function handleEmailChange(e) {
     const value = e.target.value;
-    setIdentifier(value);
+    setEmail(value);
     setDetected(detectType(value));
     setError("");
   }
 
   function validateForm() {
     if (isLogin) {
-      if (!identifier.trim()) return "Email or phone is required.";
-      if (
-        !EMAIL_REGEX.test(identifier) &&
-        !GH_PHONE_REGEX.test(identifier)
-      ) {
-        return "Please enter a valid email or phone.";
-      }
+      if (!email.trim()) return "Email is required.";
+      if (!EMAIL_REGEX.test(email)) return "Please enter a valid email.";
       if (!password.trim()) return "Password is required.";
       return null;
     } else {
@@ -55,8 +48,8 @@ const AuthPage = () => {
         return "Firstname must be at least 3 characters.";
       if (!lastname.trim() || lastname.length < 3)
         return "Lastname must be at least 3 characters.";
-      if (!EMAIL_REGEX.test(identifier))
-        return "Valid email is required for signup.";
+      if (!email.trim() || !EMAIL_REGEX.test(email))
+        return "Valid email is required.";
       if (!PASSWORD_REGEX.test(password))
         return "Password must be at least 8 characters, include uppercase, lowercase, number, and special character.";
       if (phone && !GH_PHONE_REGEX.test(phone))
@@ -85,17 +78,15 @@ const AuthPage = () => {
 
       if (isLogin) {
         endpoint = "https://farmtrack-api.onrender.com/api/auth/login";
-        payload = { emailOrPhone: identifier, password }; // ✅ backend expects this
+        payload = { emailOrPhone: email, password };
       } else {
         endpoint = "https://farmtrack-api.onrender.com/api/auth/register";
         payload = {
           firstname,
           lastname,
-          email: identifier,
+          email,
           phone: phone || undefined,
           password,
-          role: "user", // default role
-          profileInfo: {}, // optional
         };
       }
 
@@ -104,8 +95,10 @@ const AuthPage = () => {
       const res = await axios.post(endpoint, payload);
 
       // ✅ For login, save JWT token
-      if (isLogin && res.data.user?.JWT) {
-        localStorage.setItem("token", res.data.user.JWT);
+      if (isLogin) {
+        if (res.data.token) {
+          localStorage.setItem("token", res.data.token);
+        }
       }
 
       setMessage(res.data.message || "Success!");
@@ -176,13 +169,13 @@ const AuthPage = () => {
             </>
           )}
 
-          {/* Identifier (Email or Phone) */}
+          {/* Email */}
           <div className="relative">
             <input
               type="text"
-              placeholder={isLogin ? "Email or Phone" : "Email"}
-              value={identifier}
-              onChange={handleIdentifierChange}
+              placeholder="Email"
+              value={email}
+              onChange={handleEmailChange}
               className={`w-full border ${
                 error && detected === "unknown"
                   ? "border-red-500"
@@ -193,10 +186,7 @@ const AuthPage = () => {
               {detected === "email" && (
                 <MdEmail className="text-2xl text-green-400" />
               )}
-              {detected === "phone" && (
-                <FaSquarePhoneFlip className="text-2xl text-blue-400" />
-              )}
-              {detected === "unknown" && identifier && (
+              {detected === "unknown" && email && (
                 <BsFillQuestionOctagonFill className="text-red-400 text-2xl" />
               )}
             </div>
@@ -231,7 +221,7 @@ const AuthPage = () => {
               setFirstname("");
               setLastname("");
               setPhone("");
-              setIdentifier("");
+              setEmail("");
               setPassword("");
             }}
             className="text-[#b58900] font-semibold hover:underline"
