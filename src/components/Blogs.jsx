@@ -1,4 +1,5 @@
 import React from 'react';
+import FooterSection from './FooterSection';
 
 const LayerPoultryBlog = () => {
   const blogPosts = [
@@ -50,7 +51,8 @@ const LayerPoultryBlog = () => {
   ];
 
   return (
-    <div className="bg-[#FFF5E1] font-sans leading-normal tracking-normal min-h-screen py-12 sm:py-16 md:py-20">
+   <div>
+     <div className="bg-[#FFF5E1] font-sans leading-normal tracking-normal min-h-screen py-12 sm:py-16 md:py-20">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <section className="text-center mb-12 space-y-4">
@@ -128,6 +130,8 @@ const LayerPoultryBlog = () => {
         </section>
       </main>
     </div>
+    <FooterSection />
+   </div>
   );
 };
 

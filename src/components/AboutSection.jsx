@@ -1,10 +1,12 @@
 import React from 'react';
 import aboutImage from '../assets/pic.jpg';
+import FooterSection from './FooterSection';
 
 
 const AboutSection = () => {
   return (
-    <section className="bg-[#FFF5E1] min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" id="about">
+    <div>
+      <section className="bg-[#FFF5E1] min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8" id="about">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
         {/* Text Content */}
         <div className="lg:w-1/2 text-center lg:text-left space-y-6">
@@ -54,6 +56,8 @@ const AboutSection = () => {
         </div>
       </div>
     </section>
+    <FooterSection />
+    </div>
   );
 };
 
