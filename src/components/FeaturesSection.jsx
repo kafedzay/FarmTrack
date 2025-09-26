@@ -85,7 +85,7 @@ const FeaturesSection = () => {
             </p>
           </div>
           <a
-            href="#get-started"
+            href="/login"
             className="inline-block bg-[#b58900] text-white font-semibold px-6 py-3 rounded-lg 
             hover:bg-[#a57800] transition-colors duration-300 text-base sm:text-lg"
           >

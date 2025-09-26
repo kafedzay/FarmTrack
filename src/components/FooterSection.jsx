@@ -22,7 +22,7 @@ const FooterSection = () => {
             </h3>
             <ul className="space-y-2 text-sm sm:text-base text-gray-200">
               <li>
-                <Link to="/about" className="hover:text-white transition-colors duration-300">
+                <Link to="/AboutSection" className="hover:text-white transition-colors duration-300">
                   About Us
                 </Link>
               </li>
@@ -32,7 +32,7 @@ const FooterSection = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className="hover:text-white transition-colors duration-300">
+                <Link to="/Blogs" className="hover:text-white transition-colors duration-300">
                   Blog
                 </Link>
               </li>
@@ -72,7 +72,7 @@ const FooterSection = () => {
             </div>
             <div className="pt-4">
               <Link
-                to="/signup"
+                to="/login"
                 className="inline-block bg-white text-[#b58900] font-semibold px-6 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-300 text-sm sm:text-base"
               >
                 Get Started
