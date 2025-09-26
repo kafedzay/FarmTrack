@@ -51,7 +51,7 @@ const AboutSection = () => {
           <img
             src={aboutImage}
             alt="Poultry farm with FarmTrack technology"
-            className="w-full h-auto rounded-lg shadow-lg object-cover max-h-[300px] sm:max-h-[400px] lg:max-h-[500px]"
+            className="w-[100vw] h-auto rounded-lg shadow-lg object-cover max-h-[300px] sm:max-h-[400px] lg:max-h-[500px]"
           />
         </div>
       </div>
