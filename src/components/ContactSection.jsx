@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import FooterSection from './FooterSection';
+import Navbar from './NavBar';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -46,7 +47,8 @@ const ContactSection = () => {
 
   return (
    <div>
-     <section className="bg-[#FFF5E1] py-12 sm:py-16 md:py-20 lg:py-24 min-h-screen flex items-center justify-center" id="contact">
+    <Navbar/>
+     <section className="bg-[#FFF5E1] mt-10 py-12 sm:py-16 md:py-20 lg:py-24 min-h-screen flex items-center justify-center" id="contact">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 space-y-4">

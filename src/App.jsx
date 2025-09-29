@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/NavBar';
 import HeroSection from './components/HeroSection';
 import AboutSection from './components/AboutSection';
 import FeaturesSection from './components/FeaturesSection';
@@ -7,12 +6,15 @@ import ContactSection from './components/ContactSection';
 import LoginSection from './components/LoginSection';
 import Blogs from './components/Blogs';
 import Dashboard from './Pages/Dashboard';
+import NextPage from './Pages/NextPage';
+import FarmsPage from './Pages/FarmsPage';
+import IcomeTracking from './Pages/IcomeTracking';
+import OperationsTracking from './Pages/OperationsTracking';
 
 function App() {
   return (
     <Router>
       <div>
-        <Navbar />
         <Routes>
           <Route path="/" element={<HeroSection />} />
           <Route path="/AboutSection" element={<AboutSection />} />
@@ -20,7 +22,14 @@ function App() {
           <Route path="/contact" element={<ContactSection />} />
           <Route path="/login" element={<LoginSection />} />
           <Route path="/Blogs" element={<Blogs />} />
-         <Route path='/dashboard' element={<Dashboard/>} />
+          <Route path='/next' element={<NextPage />} />
+          <Route path='/dashboard' element={<Dashboard />} >
+            <Route index element={<FarmsPage />} />
+            <Route path='farm' element={<FarmsPage />} />
+            <Route path='icometracking' element={<IcomeTracking/>} /> 
+            <Route path='operationTracking' element={<OperationsTracking/>} />
+          </Route>
+
         </Routes>
       </div>
     </Router>

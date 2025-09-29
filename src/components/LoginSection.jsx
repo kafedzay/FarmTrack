@@ -5,6 +5,7 @@ import { MdEmail } from "react-icons/md";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { BsFillQuestionOctagonFill } from "react-icons/bs";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import Navbar from './NavBar';
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 // Ghana phone number: +233XXXXXXXXX or 0XXXXXXXXX (9 digits after prefix)
@@ -161,6 +162,8 @@ const AuthPage = () => {
   }
 
   return (
+ <div>
+     <Navbar />
     <section className="bg-[#fdfcf9] min-h-screen flex items-center justify-center">
       <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
         <h2 className="text-3xl font-bold text-center text-[#b58900] mb-6">
@@ -281,6 +284,7 @@ const AuthPage = () => {
         </p>
       </div>
     </section>
+ </div>
   );
 };
 

@@ -1,10 +1,12 @@
 import React from 'react';
 import FooterSection from './FooterSection';
+import Navbar from './NavBar';
 
 const FeaturesSection = () => {
   return (
    <div>
-     <section className="bg-[#FFF5E1] py-12 sm:py-16 md:py-20 lg:py-24" id="features">
+    <Navbar />
+     <section className="bg-[#FFF5E1] py-12 mt-12 sm:py-16 md:py-20 lg:py-24" id="features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12 space-y-4">

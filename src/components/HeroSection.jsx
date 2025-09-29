@@ -2,11 +2,13 @@ import heroImage from '../assets/chickslanding.jpg';
 import { Link } from 'react-router-dom';
 import pic from '../assets/pic.jpg';
 import FooterSection from './FooterSection';
+import Navbar from './NavBar';
 
 const HeroSection = () => {
   return (
     <div>
-      <section className="bg-[#FFF5E1] min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+       <Navbar />
+      <section className="bg-[#FFF5E1] mt-20 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
         {/* Text Content */}
         <div className="lg:w-1/2 text-center lg:text-left space-y-6">
@@ -20,7 +22,7 @@ const HeroSection = () => {
           </p>
           <div className="flex justify-center lg:justify-start gap-4">
             <Link
-              to="/signup"
+              to="/login"
               className="inline-block bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg 
               hover:bg-blue-700 transition-colors duration-300 text-base sm:text-lg"
             >
