@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom'; 
 import { Menu, X, Info, Star, Phone, User } from 'lucide-react';
 
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -9,16 +10,23 @@ const Navbar = () => {
   const navItems = [
     { name: 'About', icon: Info, href: '/AboutSection' },
     { name: 'Features', icon: Star, href: '/features' },
-    { name: 'Blogs',icon: Info, href: '/LearnSupport' },
+    { name: 'Blogs', icon: Info, href: '/Blogs' },
     { name: 'Contact Us', icon: Phone, href: '/contact' },
-    { name: 'Login/Register', icon: User, href: '/login' }, 
+    { 
+      name: 'Login/Register', 
+      icon: User, 
+      href: '/login',
+      asButton: true // flag for special styling
+    }, 
   ];
 
   return (
     <nav className="bg-[#b58900] text-white shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
+          
           {/* Logo as Home Button */}
+          
           <div className="flex-shrink-0">
             <Link 
               to="/" 
@@ -29,25 +37,43 @@ const Navbar = () => {
               }`}
             >
               FarmTrack
+              
             </Link>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.href}
-                className={({ isActive }) =>
-                  `flex items-center space-x-2 hover:text-yellow-100 transition-colors duration-200 ${
-                    isActive ? 'text-yellow-100 border-b-2 border-yellow-100' : ''
-                  }`
-                }
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.name}</span>
-              </NavLink>
-            ))}
+            {navItems.map((item) => 
+              item.asButton ? (
+                <NavLink
+                  key={item.name}
+                  to={item.href}
+                  className={({ isActive }) =>
+                    `flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-colors duration-200 
+                    ${isActive 
+                      ? 'bg-yellow-200 text-[#b58900]' 
+                      : 'bg-yellow-100 text-[#b58900] hover:bg-yellow-200'
+                    }`
+                  }
+                >
+                  {/* <item.icon className="w-5 h-5" /> */}
+                  <span>{item.name}</span>
+                </NavLink>
+              ) : (
+                <NavLink
+                  key={item.name}
+                  to={item.href}
+                  className={({ isActive }) =>
+                    `flex items-center space-x-2 hover:text-yellow-100 transition-colors duration-200 ${
+                      isActive ? 'text-yellow-100 border-b-2 border-yellow-100' : ''
+                    }`
+                  }
+                >
+                  {/* <item.icon className="w-5 h-5" /> */}
+                  <span>{item.name}</span>
+                </NavLink>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -66,21 +92,39 @@ const Navbar = () => {
       {isOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-[#a57800]">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.name}
-                to={item.href}
-                className={({ isActive }) =>
-                  `flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium hover:bg-[#b58900] hover:text-yellow-100 transition-colors duration-200 ${
-                    isActive ? 'bg-[#b58900] text-yellow-100' : ''
-                  }`
-                }
-                onClick={() => setIsOpen(false)}
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.name}</span>
-              </NavLink>
-            ))}
+            {navItems.map((item) => 
+              item.asButton ? (
+                <NavLink
+                  key={item.name}
+                  to={item.href}
+                  className={({ isActive }) =>
+                    `flex items-center space-x-2 px-4 py-2 rounded-full font-medium transition-colors duration-200 
+                    ${isActive 
+                      ? 'bg-yellow-200 text-[#b58900]' 
+                      : 'bg-yellow-100 text-[#b58900] hover:bg-yellow-200'
+                    }`
+                  }
+                  onClick={() => setIsOpen(false)}
+                >
+                  {/* <item.icon className="w-5 h-5" /> */}
+                  <span>{item.name}</span>
+                </NavLink>
+              ) : (
+                <NavLink
+                  key={item.name}
+                  to={item.href}
+                  className={({ isActive }) =>
+                    `flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium hover:bg-[#b58900] hover:text-yellow-100 transition-colors duration-200 ${
+                      isActive ? 'bg-[#b58900] text-yellow-100' : ''
+                    }`
+                  }
+                  onClick={() => setIsOpen(false)}
+                >
+                  {/* <item.icon className="w-5 h-5" /> */}
+                  <span>{item.name}</span>
+                </NavLink>
+              )
+            )}
           </div>
         </div>
       )}

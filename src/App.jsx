@@ -6,9 +6,11 @@ import FeaturesSection from './components/FeaturesSection';
 import ContactSection from './components/ContactSection';
 import LoginSection from './components/LoginSection';
 import Blogs from './components/Blogs';
+import Blogs1 from './components/Blogs1';
 
 function App() {
   return (
+    <div>
     <Router>
       <div>
         <Navbar />
@@ -19,10 +21,25 @@ function App() {
           <Route path="/contact" element={<ContactSection />} />
           <Route path="/login" element={<LoginSection />} />
           <Route path="/Blogs" element={<Blogs />} />
-
         </Routes>
+
+        
       </div>
     </Router>
+
+    <Router>
+      <Routes>
+        <Route path="/" element={<Blogs />} />
+        <Route path="/blogs1" element={<Blogs1 />} />
+      </Routes>
+    </Router>
+
+    </div>
+
+    
+
+
+
   );
 }
 
