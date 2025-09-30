@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
 import { FaBars } from "react-icons/fa6";
 import { GrClose, GrMoney } from "react-icons/gr";
+import { PiMoneyWavyBold } from "react-icons/pi";
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -12,6 +13,7 @@ export default function Sidebar() {
     { path: '/dashboard/farm', icon: <FaHome className="text-xl" />, label: 'Create Farm' },
     { path: '/dashboard/icometracking', icon: <GrMoney className="text-xl" />, label: 'Income Tracking' },
     { path: '/dashboard/operationTracking', icon: <FaChartBar className="text-xl" />, label: 'Operation Tracking' },
+    { path: '/dashboard/expense', icon: <PiMoneyWavyBold className="text-xl" />, label: 'Expense Tracker' },
   ];
 
   const toggleSidebar = () => {
@@ -73,8 +75,7 @@ export default function Sidebar() {
               key={page.path}
               to={page.path}
               className={({ isActive }) =>
-                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${
-                  isActive ? 'bg-[#a57800] text-yellow-100 shadow-sm' : ''
+                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${isActive ? 'bg-[#a57800] text-yellow-100 shadow-sm' : ''
                 }`
               }
               onClick={closeMobileMenu}

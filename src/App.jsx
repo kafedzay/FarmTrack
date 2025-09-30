@@ -10,6 +10,7 @@ import NextPage from './Pages/NextPage';
 import FarmsPage from './Pages/FarmsPage';
 import IcomeTracking from './Pages/IcomeTracking';
 import OperationsTracking from './Pages/OperationsTracking';
+import ExpenseTracker from './Pages/ExpenseTracker';
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path='farm' element={<FarmsPage />} />
             <Route path='icometracking' element={<IcomeTracking/>} /> 
             <Route path='operationTracking' element={<OperationsTracking/>} />
+            <Route path='expense' element={<ExpenseTracker/>} />
           </Route>
 
         </Routes>
