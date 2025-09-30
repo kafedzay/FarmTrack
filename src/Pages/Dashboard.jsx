@@ -7,11 +7,11 @@ export default function Dashboard() {
       <div className="fixed md:static top-0 left-0 h-full z-40">
         <Sidebar />
       </div>
-      <div className="flex-1 pt-20 md:pt-6 px-4 sm:px-6 lg:px-8 md:ml-64 md:transition-all md:duration-300">
-        <main className="max-w-7xl mx-auto ">
+      <div className="flex-1 pt-16 md:pt-0 md:ml-64">
+        <main className="p-4 sm:p-6 lg:p-8">
           <Outlet />
         </main>
       </div>
     </div>
   );
-} 
+}
