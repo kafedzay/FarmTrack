@@ -1,19 +1,38 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from 'react-icons/fa';
+import React, { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
 import { GrClose, GrMoney } from "react-icons/gr";
 import { PiMoneyWavyBold } from "react-icons/pi";
+import { AuthContext } from "../context/AuthContext";
+import { useContext } from "react";
 
 export default function Sidebar() {
+  const { user, logout } = useContext(AuthContext);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const pages = [
-    { path: '/dashboard/farm', icon: <FaHome className="text-xl" />, label: 'Create Farm' },
-    { path: '/dashboard/icometracking', icon: <GrMoney className="text-xl" />, label: 'Income Tracking' },
-    { path: '/dashboard/operationTracking', icon: <FaChartBar className="text-xl" />, label: 'Operation Tracking' },
-    { path: '/dashboard/expense', icon: <PiMoneyWavyBold className="text-xl" />, label: 'Expense Tracker' },
+    {
+      path: "/dashboard/farm",
+      icon: <FaHome className="text-xl" />,
+      label: "Create Farm",
+    },
+    {
+      path: "/dashboard/icometracking",
+      icon: <GrMoney className="text-xl" />,
+      label: "Income Tracking",
+    },
+    {
+      path: "/dashboard/operationTracking",
+      icon: <FaChartBar className="text-xl" />,
+      label: "Operation Tracking",
+    },
+    {
+      path: "/dashboard/expense",
+      icon: <PiMoneyWavyBold className="text-xl" />,
+      label: "Expense Tracker",
+    },
   ];
 
   const toggleSidebar = () => {
@@ -33,7 +52,8 @@ export default function Sidebar() {
 
   const handleLogout = () => {
     // Placeholder for logout functionality
-    console.log('Logout clicked');
+    console.log("Logout clicked");
+    logout();
     closeMobileMenu();
   };
 
@@ -44,10 +64,14 @@ export default function Sidebar() {
         <button
           className="p-2 rounded-md hover:bg-[#a57800]/80 transition-all duration-200 ease-in-out"
           onClick={toggleMobileMenu}
-          aria-label={isMobileMenuOpen ? 'Close Menu' : 'Open Menu'}
+          aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
           aria-expanded={isMobileMenuOpen}
         >
-          {isMobileMenuOpen ? <GrClose className="text-white text-xl" /> : <FaBars className="text-xl" />}
+          {isMobileMenuOpen ? (
+            <GrClose className="text-white text-xl" />
+          ) : (
+            <FaBars className="text-xl" />
+          )}
         </button>
         <span className="text-xl font-semibold tracking-tight">FarmTrack</span>
       </div>
@@ -55,18 +79,24 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         className={`bg-[#b58900] text-white shadow-lg transition-all duration-300 ease-in-out
-          ${isCollapsed ? 'w-16' : 'w-64'} 
-          ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} 
+          ${isCollapsed ? "w-16" : "w-64"} 
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} 
           md:translate-x-0 fixed md:static z-40 top-14 md:top-0 h-[calc(100vh-3.5rem)] md:h-screen flex flex-col`}
       >
         <div className="flex items-center justify-between p-4">
-          {!isCollapsed && <h1 className="text-2xl font-semibold tracking-tight">FarmTrack</h1>}
+          {!isCollapsed && (
+            <h1 className="text-2xl font-semibold tracking-tight">FarmTrack</h1>
+          )}
           <button
             className="p-2 hidden md:block rounded-md hover:bg-[#a57800]/80 transition-all duration-200"
             onClick={toggleSidebar}
-            aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+            aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
-            {isCollapsed ? <FaBars className="text-xl" /> : <FaArrowLeft className="text-xl" />}
+            {isCollapsed ? (
+              <FaBars className="text-xl" />
+            ) : (
+              <FaArrowLeft className="text-xl" />
+            )}
           </button>
         </div>
         <nav className="mt-4 space-y-1 flex-grow">
@@ -75,7 +105,8 @@ export default function Sidebar() {
               key={page.path}
               to={page.path}
               className={({ isActive }) =>
-                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${isActive ? 'bg-[#a57800] text-yellow-100 shadow-sm' : ''
+                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${
+                  isActive ? "bg-[#a57800] text-yellow-100 shadow-sm" : ""
                 }`
               }
               onClick={closeMobileMenu}
@@ -88,6 +119,7 @@ export default function Sidebar() {
         </nav>
         {/* Logout Button */}
         <div className="p-4 mt-auto">
+          <h1 className="font-bold">Welcome {user?.email} 👋</h1>
           <button
             className="flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 w-full text-left"
             onClick={handleLogout}

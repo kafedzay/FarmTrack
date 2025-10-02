@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React, { useState, useContext, useEffect } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { BsFillQuestionOctagonFill } from "react-icons/bs";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import Navbar from './NavBar';
+import { AuthContext } from "../context/AuthContext";
+
+import Navbar from "./NavBar";
 
 const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
 // Ghana phone number: +233XXXXXXXXX or 0XXXXXXXXX (9 digits after prefix)
@@ -16,6 +18,15 @@ const PASSWORD_REGEX =
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const { user, login } = useContext(AuthContext);
+  const { axiosInstance } = useContext(AuthContext);
+
+  //auto redirect if user is already logged in
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   const [isLogin, setIsLogin] = useState(true);
   const [firstname, setFirstname] = useState("");
@@ -28,6 +39,7 @@ const AuthPage = () => {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  // const { login } = useContext(AuthContext);
 
   // Detect whether input is email or phone
   function detectType(value) {
@@ -100,7 +112,7 @@ const AuthPage = () => {
       let endpoint = "";
 
       if (isLogin) {
-        endpoint = "https://farmtrack-api.onrender.com/api/auth/login";
+        endpoint = "/api/auth/login";
         payload = {
           emailOrPhone:
             detected === "phone" ? normalizePhone(emailOrPhone) : emailOrPhone,
@@ -108,7 +120,7 @@ const AuthPage = () => {
         };
         // payload = { emailOrPhone: emailOrPhone.trim(), password };
       } else {
-        endpoint = "https://farmtrack-api.onrender.com/api/auth/register";
+        endpoint = "/api/auth/register";
         payload = {
           firstname,
           lastname,
@@ -120,11 +132,15 @@ const AuthPage = () => {
 
       console.log("Sending payload:", payload);
 
-      const res = await axios.post(endpoint, payload);
+      const res = await axiosInstance.post(endpoint, payload, {
+        withCredentials: true,
+      });
+      const { accessToken, user } = res.data;
 
       // Save token + user
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      if (accessToken && user) {
+        login(user, accessToken);
+      }
 
       console.log(res.data);
       setMessage(res.data.message || "Success!");
@@ -133,7 +149,7 @@ const AuthPage = () => {
       setTimeout(() => {
         setLoading(false);
         navigate("/dashboard");
-      }, 2000);
+      }, 1000);
     } catch (err) {
       const errorMsg =
         err.response?.data?.message ||
@@ -162,129 +178,129 @@ const AuthPage = () => {
   }
 
   return (
- <div>
-     <Navbar />
-    <section className="bg-[#fdfcf9] min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
-        <h2 className="text-3xl font-bold text-center text-[#b58900] mb-6">
-          {isLogin ? "Login to FarmTrack" : "Register for FarmTrack"}
-        </h2>
+    <div>
+      <Navbar />
+      <section className="bg-[#fdfcf9] min-h-screen flex items-center justify-center">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-center text-[#b58900] mb-6">
+            {isLogin ? "Login to FarmTrack" : "Register for FarmTrack"}
+          </h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* registration  */}
-          {!isLogin && (
-            <>
-              <input
-                type="text"
-                name="firstname"
-                placeholder="Firstname"
-                value={firstname}
-                onChange={(e) => setFirstname(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2"
-              />
-              <input
-                type="text"
-                name="lastname"
-                placeholder="Lastname"
-                value={lastname}
-                onChange={(e) => setLastname(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2"
-              />
-              <input
-                type="text"
-                name="phone"
-                placeholder="Phone (Optional)"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full border border-gray-300 rounded-md px-4 py-2"
-              />
-            </>
-          )}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            {/* registration  */}
+            {!isLogin && (
+              <>
+                <input
+                  type="text"
+                  name="firstname"
+                  placeholder="Firstname"
+                  value={firstname}
+                  onChange={(e) => setFirstname(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-4 py-2"
+                />
+                <input
+                  type="text"
+                  name="lastname"
+                  placeholder="Lastname"
+                  value={lastname}
+                  onChange={(e) => setLastname(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-4 py-2"
+                />
+                <input
+                  type="text"
+                  name="phone"
+                  placeholder="Phone (Optional)"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-4 py-2"
+                />
+              </>
+            )}
 
-          {/* Email or Phone login*/}
-          <div className="relative">
-            <input
-              type="text"
-              id="emailOrPhone"
-              name="emailOrPhone"
-              placeholder={isLogin ? "Email or Phone" : "Email"}
-              value={emailOrPhone}
-              onChange={handleEmailOrPhoneChange}
-              className={`w-full border ${
-                error && detected === "unknown"
-                  ? "border-red-500"
-                  : "border-gray-300"
-              } rounded-md px-4 py-2`}
-            />
-            <div className="absolute right-3 top-1/2 -translate-y-1/2">
-              {detected === "email" && (
-                <MdEmail className="text-2xl text-green-400" />
-              )}
-              {detected === "phone" && (
-                <BsFillTelephoneFill className="text-2xl text-blue-400" />
-              )}
-              {detected === "unknown" && emailOrPhone && (
-                <BsFillQuestionOctagonFill className="text-red-400 text-2xl" />
-              )}
+            {/* Email or Phone login*/}
+            <div className="relative">
+              <input
+                type="text"
+                id="emailOrPhone"
+                name="emailOrPhone"
+                placeholder={isLogin ? "Email or Phone" : "Email"}
+                value={emailOrPhone}
+                onChange={handleEmailOrPhoneChange}
+                className={`w-full border ${
+                  error && detected === "unknown"
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-md px-4 py-2`}
+              />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                {detected === "email" && (
+                  <MdEmail className="text-2xl text-green-400" />
+                )}
+                {detected === "phone" && (
+                  <BsFillTelephoneFill className="text-2xl text-blue-400" />
+                )}
+                {detected === "unknown" && emailOrPhone && (
+                  <BsFillQuestionOctagonFill className="text-red-400 text-2xl" />
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* password with toggle */}
-          <div className="relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-4 py-2"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-1/2 -translate-y-1/2
+            {/* password with toggle */}
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-4 py-2"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute right-3 top-1/2 -translate-y-1/2
               text-gray-500"
+              >
+                {showPassword ? (
+                  <AiFillEyeInvisible className="text-2xl" />
+                ) : (
+                  <AiFillEye className="text-2xl" />
+                )}
+              </button>
+            </div>
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {message && <p className="text-green-600 text-sm">{message}</p>}
+
+            <button
+              type="submit"
+              className="w-full bg-[#b58900] text-white px-4 py-2 rounded-md hover:bg-[#a57800] transition-colors"
             >
-              {showPassword ? (
-                <AiFillEyeInvisible className="text-2xl" />
-              ) : (
-                <AiFillEye className="text-2xl" />
-              )}
+              {isLogin ? "Login" : "Register"}
             </button>
-          </div>
+          </form>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          {message && <p className="text-green-600 text-sm">{message}</p>}
-
-          <button
-            type="submit"
-            className="w-full bg-[#b58900] text-white px-4 py-2 rounded-md hover:bg-[#a57800] transition-colors"
-          >
-            {isLogin ? "Login" : "Register"}
-          </button>
-        </form>
-
-        <p className="mt-4 text-center text-gray-700">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError("");
-              setMessage("");
-              setFirstname("");
-              setLastname("");
-              setPhone("");
-              setEmailOrPhone("");
-              setPassword("");
-            }}
-            className="text-[#b58900] font-semibold hover:underline"
-          >
-            {isLogin ? "Register" : "Login"}
-          </button>
-        </p>
-      </div>
-    </section>
- </div>
+          <p className="mt-4 text-center text-gray-700">
+            {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setError("");
+                setMessage("");
+                setFirstname("");
+                setLastname("");
+                setPhone("");
+                setEmailOrPhone("");
+                setPassword("");
+              }}
+              className="text-[#b58900] font-semibold hover:underline"
+            >
+              {isLogin ? "Register" : "Login"}
+            </button>
+          </p>
+        </div>
+      </section>
+    </div>
   );
 };
 
