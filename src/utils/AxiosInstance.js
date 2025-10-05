@@ -23,24 +23,24 @@ export const createAxiosInstance = ({ accessToken, refreshToken, logout }) => {
   axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
-      const originalRequest = error.config;
+      // const originalRequest = error.config;
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
+      // if (error.response?.status === 401 && !originalRequest._retry) {
+      //   originalRequest._retry = true;
 
-        try {
-          const newAccessToken = await refreshToken();
-          if (newAccessToken) {
-            originalRequest.headers[
-              "Authorization"
-            ] = `Bearer ${newAccessToken}`;
-            return axiosInstance(originalRequest);
-          }
-        } catch (refreshError) {
-          console.error("Token refresh failed:", refreshError);
-          logout();
-        }
-      }
+      //   try {
+      //     const newAccessToken = await refreshToken();
+      //     if (newAccessToken) {
+      //       originalRequest.headers[
+      //         "Authorization"
+      //       ] = `Bearer ${newAccessToken}`;
+      //       return axiosInstance(originalRequest);
+      //     }
+      //   } catch (refreshError) {
+      //     console.error("Token refresh failed:", refreshError);
+      //     logout();
+      //   }
+      // }
 
       return Promise.reject(error);
     }

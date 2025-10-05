@@ -1,35 +1,42 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
 import { GrClose, GrMoney } from "react-icons/gr";
 import { PiMoneyWavyBold } from "react-icons/pi";
+import { RiDashboardFill } from "react-icons/ri";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
 
 export default function Sidebar() {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const pages = [
     {
-      path: "/dashboard/farm",
+      path: "/AdminPage/dashboard",
+      icon: <RiDashboardFill className="text-xl" />,
+      label: "Dashboard",
+    },
+    {
+      path: "/AdminPage/farm",
       icon: <FaHome className="text-xl" />,
       label: "Create Farm",
     },
     {
-      path: "/dashboard/icometracking",
+      path: "/AdminPage/icometracking",
       icon: <GrMoney className="text-xl" />,
       label: "Income Tracking",
     },
     {
-      path: "/dashboard/operationTracking",
+      path: "/AdminPage/operationTracking",
       icon: <FaChartBar className="text-xl" />,
       label: "Operation Tracking",
     },
     {
-      path: "/dashboard/expense",
+      path: "/AdminPage/expense",
       icon: <PiMoneyWavyBold className="text-xl" />,
       label: "Expense Tracker",
     },
@@ -50,10 +57,9 @@ export default function Sidebar() {
     setIsMobileMenuOpen(false);
   };
 
-  const handleLogout = () => {
-    // Placeholder for logout functionality
-    console.log("Logout clicked");
-    logout();
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
     closeMobileMenu();
   };
 
@@ -105,8 +111,7 @@ export default function Sidebar() {
               key={page.path}
               to={page.path}
               className={({ isActive }) =>
-                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${
-                  isActive ? "bg-[#a57800] text-yellow-100 shadow-sm" : ""
+                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${isActive ? "bg-[#a57800] text-yellow-100 shadow-sm" : ""
                 }`
               }
               onClick={closeMobileMenu}

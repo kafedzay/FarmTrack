@@ -5,13 +5,14 @@ import FeaturesSection from "./components/FeaturesSection";
 import ContactSection from "./components/ContactSection";
 import LoginSection from "./components/LoginSection";
 import Blogs from "./components/Blogs";
-import Dashboard from "./Pages/Dashboard";
+import AdminPage from "./Pages/AdminPage";
 import NextPage from "./Pages/NextPage";
 import FarmsPage from "./Pages/FarmsPage";
 import IcomeTracking from "./Pages/IcomeTracking";
 import OperationsTracking from "./Pages/OperationsTracking";
 import ExpenseTracker from "./Pages/ExpenseTracker";
 import ProtectedRoute from "./components/ProtectedRoute";
+import DashboardPage from "./Pages/DashboardPage";
 
 function App() {
   return (
@@ -29,14 +30,15 @@ function App() {
 
           {/* protected Routes */}
           <Route
-            path="/dashboard"
+            path="/AdminPage"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <AdminPage />
               </ProtectedRoute>
             }
           >
-            <Route index element={<FarmsPage />} />
+            <Route index element={<DashboardPage/>} />
+            <Route path="dashboard" element={<DashboardPage/>} />
             <Route path="farm" element={<FarmsPage />} />
             <Route path="icometracking" element={<IcomeTracking />} />
             <Route path="operationTracking" element={<OperationsTracking />} />

@@ -24,7 +24,7 @@ const AuthPage = () => {
   //auto redirect if user is already logged in
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate("/AdminPage");
     }
   }, [user, navigate]);
 
@@ -148,7 +148,7 @@ const AuthPage = () => {
       //Navigate after 2s
       setTimeout(() => {
         setLoading(false);
-        navigate("/dashboard");
+        navigate("/AdminPage");
       }, 1000);
     } catch (err) {
       const errorMsg =
