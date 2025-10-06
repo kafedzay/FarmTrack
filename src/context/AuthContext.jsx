@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
         logout: () => {},
       });
       await axiosInstance.post(
-        "/api/auth/logout",
+        "/auth/logout",
         {},
         { withCredentials: true }
       );

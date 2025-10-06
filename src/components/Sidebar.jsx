@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
 import { GrClose, GrMoney } from "react-icons/gr";
-import { PiMoneyWavyBold } from "react-icons/pi";
+import { PiMoneyWavyBold,PiFarmFill } from "react-icons/pi";
 import { RiDashboardFill } from "react-icons/ri";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -22,7 +22,7 @@ export default function Sidebar() {
     },
     {
       path: "/AdminPage/farm",
-      icon: <FaHome className="text-xl" />,
+      icon: <PiFarmFill className="text-xl" />,
       label: "Create Farm",
     },
     {
