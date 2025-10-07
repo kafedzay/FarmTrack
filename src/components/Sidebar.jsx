@@ -28,12 +28,12 @@ export default function Sidebar() {
     {
       path: "/AdminPage/icometracking",
       icon: <GrMoney className="text-xl" />,
-      label: "Income Tracking",
+      label: "Fram Records",
     },
     {
       path: "/AdminPage/operationTracking",
       icon: <FaChartBar className="text-xl" />,
-      label: "Operation Tracking",
+      label: "Sales Tracking",
     },
     {
       path: "/AdminPage/expense",
