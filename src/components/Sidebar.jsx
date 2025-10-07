@@ -85,9 +85,9 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         className={`bg-[#b58900] text-white shadow-lg transition-all duration-300 ease-in-out
-          ${isCollapsed ? "w-16" : "w-64"} 
-          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} 
-          md:translate-x-0 fixed md:static z-40 top-14 md:top-0 h-[calc(100vh-3.5rem)] md:h-screen flex flex-col`}
+          ${isCollapsed ? "w-16" : "w-64"}
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0 fixed z-40 top-14 md:top-0 h-[calc(100vh-3.5rem)] md:h-screen flex flex-col`}
       >
         <div className="flex items-center justify-between p-4">
           {!isCollapsed && (

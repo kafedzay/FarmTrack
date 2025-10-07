@@ -8,7 +8,7 @@ import Blogs from "./components/Blogs";
 import AdminPage from "./Pages/AdminPage";
 import NextPage from "./Pages/NextPage";
 import FarmsPage from "./Pages/FarmsPage";
-import IcomeTracking from "./Pages/IcomeTracking";
+import IcomeTracking from "./Pages/Records";
 import OperationsTracking from "./Pages/OperationsTracking";
 import ExpenseTracker from "./Pages/ExpenseTracker";
 import ProtectedRoute from "./components/ProtectedRoute";

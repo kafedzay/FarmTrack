@@ -227,89 +227,85 @@ const CreateFarm = () => {
 
       {/* Modal for Create/Edit Farm */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
-          <div className="bg-white p-8 rounded-xl w-full max-w-lg shadow-2xl">
-            <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl">
+            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
               {editId ? 'Edit Farm' : 'Create New Farm'}
             </h2>
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-semibold" htmlFor="farmName">
-                  Farm Name
-                </label>
-                <input
-                  type="text"
-                  name="farmName"
-                  value={formData.farmName}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b58900] focus:border-transparent ${
-                    formErrors.farmName ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter farm name"
-                  required
-                />
-                {formErrors.farmName && (
-                  <p className="text-red-500 text-sm mt-1">{formErrors.farmName}</p>
-                )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="farmName">
+                    Farm Name
+                  </label>
+                  <input
+                    type="text"
+                    name="farmName"
+                    value={formData.farmName}
+                    onChange={handleInputChange}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.farmName ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="Enter farm name"
+                    required
+                  />
+                  {formErrors.farmName && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.farmName}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="location">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={formData.location}
+                    onChange={handleInputChange}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.location ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="Enter location"
+                    required
+                  />
+                  {formErrors.location && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.location}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="size">
+                    Farm Size (acres)
+                  </label>
+                  <input
+                    type="number"
+                    name="size"
+                    value={formData.size}
+                    onChange={handleInputChange}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.size ? 'border-red-500' : 'border-gray-300'}`}
+                    placeholder="Enter farm size in acres"
+                    step="0.01"
+                    required
+                  />
+                  {formErrors.size && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.size}</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="farmType">
+                    Farm Type
+                  </label>
+                  <select
+                    name="farmType"
+                    value={formData.farmType}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="">Select farm type</option>
+                    {farmTypeOptions.map((type) => (
+                      <option key={type} value={type}>
+                        {type}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-semibold" htmlFor="location">
-                  Location
-                </label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b58900] focus:border-transparent ${
-                    formErrors.location ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter location"
-                  required
-                />
-                {formErrors.location && (
-                  <p className="text-red-500 text-sm mt-1">{formErrors.location}</p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-semibold" htmlFor="size">
-                  Farm Size (acres)
-                </label>
-                <input
-                  type="number"
-                  name="size"
-                  value={formData.size}
-                  onChange={handleInputChange}
-                  className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b58900] focus:border-transparent ${
-                    formErrors.size ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter farm size in acres"
-                  step="0.01" // Allow decimal input
-                  required
-                />
-                {formErrors.size && (
-                  <p className="text-red-500 text-sm mt-1">{formErrors.size}</p>
-                )}
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2 font-semibold" htmlFor="farmType">
-                  Farm Type
-                </label>
-                <select
-                  name="farmType"
-                  value={formData.farmType}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b58900] focus:border-transparent"
-                >
-                  <option value="">Select farm type</option>
-                  {farmTypeOptions.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
+              <div className="mb-6">
                 <label className="block text-gray-700 mb-2 font-semibold" htmlFor="description">
                   Description (Optional)
                 </label>
@@ -317,9 +313,9 @@ const CreateFarm = () => {
                   name="description"
                   value={formData.description}
                   onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b58900] focus:border-transparent"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter description"
-                  rows="3"
+                  rows="2"
                 />
               </div>
               <div className="flex gap-4 justify-end">
@@ -333,7 +329,7 @@ const CreateFarm = () => {
                 </button>
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-[#b58900] to-[#d4a017] text-white px-6 py-3 rounded-lg hover:from-[#a57800] hover:to-[#b58900] transition-all duration-300 shadow-lg disabled:opacity-50"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg disabled:opacity-50"
                   disabled={actionLoading}
                 >
                   {actionLoading ? 'Saving...' : editId ? 'Update Farm' : 'Create Farm'}
