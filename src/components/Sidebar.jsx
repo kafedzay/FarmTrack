@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
 import { GrClose, GrMoney } from "react-icons/gr";
-import { PiMoneyWavyBold,PiFarmFill } from "react-icons/pi";
+import { PiMoneyWavyBold, PiFarmFill } from "react-icons/pi";
 import { RiDashboardFill } from "react-icons/ri";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -26,12 +26,12 @@ export default function Sidebar() {
       label: "Create Farm",
     },
     {
-      path: "/AdminPage/icometracking",
+      path: "/AdminPage/records",
       icon: <GrMoney className="text-xl" />,
-      label: "Fram Records",
+      label: "Farm Records",
     },
     {
-      path: "/AdminPage/operationTracking",
+      path: "/AdminPage/sales",
       icon: <FaChartBar className="text-xl" />,
       label: "Sales Tracking",
     },
@@ -59,7 +59,7 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate("/login");
     closeMobileMenu();
   };
 
@@ -111,7 +111,8 @@ export default function Sidebar() {
               key={page.path}
               to={page.path}
               className={({ isActive }) =>
-                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${isActive ? "bg-[#a57800] text-yellow-100 shadow-sm" : ""
+                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${
+                  isActive ? "bg-[#a57800] text-yellow-100 shadow-sm" : ""
                 }`
               }
               onClick={closeMobileMenu}

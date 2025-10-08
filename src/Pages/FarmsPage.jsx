@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { FaPlus, FaEdit, FaTrash, FaEye } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
-import { toast } from 'react-toastify'; // Import toast for notifications
-import 'react-toastify/dist/ReactToastify.css'; // Import toast styles
+import React, { useState, useEffect, useContext } from "react";
+import { FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify"; // Import toast for notifications
+import "react-toastify/dist/ReactToastify.css"; // Import toast styles
 
 const CreateFarm = () => {
   const { axiosInstance, user } = useContext(AuthContext);
@@ -12,11 +12,11 @@ const CreateFarm = () => {
   const [actionLoading, setActionLoading] = useState(false); // Loading state for actions
   const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
-    farmName: '',
-    location: '',
-    size: '',
-    farmType: '',
-    description: '',
+    farmName: "",
+    location: "",
+    size: "",
+    farmType: "",
+    description: "",
   });
   const [formErrors, setFormErrors] = useState({}); // Form validation errors
   const [editId, setEditId] = useState(null);
@@ -24,18 +24,18 @@ const CreateFarm = () => {
   const navigate = useNavigate();
 
   // Farm type options for dropdown
-  const farmTypeOptions = ['Crop', 'Livestock', 'Mixed', 'Organic', 'Other'];
+  const farmTypeOptions = ["Poultry", "Other"];
 
   // Fetch farms
   const fetchFarms = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await axiosInstance.get('/api/farms');
+      const response = await axiosInstance.get("/api/farms");
       const activeFarms = response.data.farms.filter((farm) => farm.isActive);
       setFarms(activeFarms);
     } catch (err) {
-      const errorMessage = err.response?.data?.error || 'Failed to fetch farms';
+      const errorMessage = err.response?.data?.error || "Failed to fetch farms";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -52,12 +52,16 @@ const CreateFarm = () => {
   // Validate form inputs
   const validateForm = () => {
     const errors = {};
-    if (!formData.farmName.trim()) errors.farmName = 'Farm name is required';
-    if (!formData.location.trim()) errors.location = 'Location is required';
-    if (!formData.size || isNaN(formData.size) || parseFloat(formData.size) <= 0) {
-      errors.size = 'Size must be a positive number';
+    if (!formData.farmName.trim()) errors.farmName = "Farm name is required";
+    if (!formData.location.trim()) errors.location = "Location is required";
+    if (
+      !formData.size ||
+      isNaN(formData.size) ||
+      parseFloat(formData.size) <= 0
+    ) {
+      errors.size = "Size must be a positive number";
     }
-    if (!formData.farmType.trim()) errors.farmType = 'Farm type is required';
+    if (!formData.farmType.trim()) errors.farmType = "Farm type is required";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -66,13 +70,13 @@ const CreateFarm = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     // Clear error for the field being edited
-    setFormErrors({ ...formErrors, [name]: '' });
+    setFormErrors({ ...formErrors, [name]: "" });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      toast.error('Please fix the form errors');
+      toast.error("Please fix the form errors");
       return;
     }
 
@@ -92,17 +96,23 @@ const CreateFarm = () => {
 
       if (editId) {
         await axiosInstance.put(`/api/farms/${editId}`, payload);
-        toast.success('Farm updated successfully');
+        toast.success("Farm updated successfully");
       } else {
-        await axiosInstance.post('/api/farms', payload);
-        toast.success('Farm created successfully');
+        await axiosInstance.post("/api/farms", payload);
+        toast.success("Farm created successfully");
       }
       fetchFarms();
-      setFormData({ farmName: '', location: '', size: '', farmType: '', description: '' });
+      setFormData({
+        farmName: "",
+        location: "",
+        size: "",
+        farmType: "",
+        description: "",
+      });
       setEditId(null);
       setIsModalOpen(false);
     } catch (err) {
-      const errorMessage = err.response?.data?.error || 'Failed to save farm';
+      const errorMessage = err.response?.data?.error || "Failed to save farm";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -117,22 +127,24 @@ const CreateFarm = () => {
       location: farm.location,
       size: farm.size.toString(), // Convert to string for input
       farmType: farm.farmType,
-      description: farm.description || '',
+      description: farm.description || "",
     });
     setFormErrors({});
     setIsModalOpen(true);
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to deactivate this farm?')) return;
+    if (!window.confirm("Are you sure you want to deactivate this farm?"))
+      return;
     setActionLoading(true);
     setError(null);
     try {
       await axiosInstance.patch(`/api/farms/${id}`);
-      toast.success('Farm deactivated successfully');
+      toast.success("Farm deactivated successfully");
       fetchFarms();
     } catch (err) {
-      const errorMessage = err.response?.data?.error || 'Failed to deactivate farm';
+      const errorMessage =
+        err.response?.data?.error || "Failed to deactivate farm";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -154,7 +166,13 @@ const CreateFarm = () => {
       <div className="flex justify-end mb-6">
         <button
           onClick={() => {
-            setFormData({ farmName: '', location: '', size: '', farmType: '', description: '' });
+            setFormData({
+              farmName: "",
+              location: "",
+              size: "",
+              farmType: "",
+              description: "",
+            });
             setEditId(null);
             setFormErrors({});
             setIsModalOpen(true);
@@ -172,7 +190,9 @@ const CreateFarm = () => {
       ) : error ? (
         <div className="text-center py-8 text-red-500">{error}</div>
       ) : farms.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">No active farms found. Create one to get started!</div>
+        <div className="text-center py-8 text-gray-500">
+          No active farms found. Create one to get started!
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {farms.map((farm) => (
@@ -180,7 +200,9 @@ const CreateFarm = () => {
               key={farm.id}
               className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-[#b58900]/30"
             >
-              <h2 className="text-xl font-bold text-gray-800 mb-2">{farm.farmName}</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-2">
+                {farm.farmName}
+              </h2>
               <p className="text-gray-600 mb-2">
                 <strong>Location:</strong> {farm.location}
               </p>
@@ -230,12 +252,15 @@ const CreateFarm = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
           <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl">
             <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
-              {editId ? 'Edit Farm' : 'Create New Farm'}
+              {editId ? "Edit Farm" : "Create New Farm"}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="farmName">
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="farmName"
+                  >
                     Farm Name
                   </label>
                   <input
@@ -243,16 +268,23 @@ const CreateFarm = () => {
                     name="farmName"
                     value={formData.farmName}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.farmName ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      formErrors.farmName ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="Enter farm name"
                     required
                   />
                   {formErrors.farmName && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.farmName}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {formErrors.farmName}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="location">
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="location"
+                  >
                     Location
                   </label>
                   <input
@@ -260,34 +292,48 @@ const CreateFarm = () => {
                     name="location"
                     value={formData.location}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.location ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      formErrors.location ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="Enter location"
                     required
                   />
                   {formErrors.location && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.location}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {formErrors.location}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="size">
-                    Farm Size (acres)
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="size"
+                  >
+                    Farm Size (birds)
                   </label>
                   <input
                     type="number"
                     name="size"
                     value={formData.size}
                     onChange={handleInputChange}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.size ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      formErrors.size ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="Enter farm size in acres"
                     step="0.01"
                     required
                   />
                   {formErrors.size && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.size}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {formErrors.size}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="farmType">
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="farmType"
+                  >
                     Farm Type
                   </label>
                   <select
@@ -306,7 +352,10 @@ const CreateFarm = () => {
                 </div>
               </div>
               <div className="mb-6">
-                <label className="block text-gray-700 mb-2 font-semibold" htmlFor="description">
+                <label
+                  className="block text-gray-700 mb-2 font-semibold"
+                  htmlFor="description"
+                >
                   Description (Optional)
                 </label>
                 <textarea
@@ -332,7 +381,11 @@ const CreateFarm = () => {
                   className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg disabled:opacity-50"
                   disabled={actionLoading}
                 >
-                  {actionLoading ? 'Saving...' : editId ? 'Update Farm' : 'Create Farm'}
+                  {actionLoading
+                    ? "Saving..."
+                    : editId
+                    ? "Update Farm"
+                    : "Create Farm"}
                 </button>
               </div>
             </form>

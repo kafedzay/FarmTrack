@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
         logout: () => {},
       });
       await axiosInstance.post(
-        "/auth/logout",
+        "api/auth/logout",
         {},
         { withCredentials: true }
       );
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   const refreshToken = async () => {
     try {
       const res = await fetch(
-        (import.meta.env.VITE_API_URL || "https://farmtrack-api.onrender.com") +
+        (import.meta.env.VITE_API_URL || "http://localhost:5500") +
           "/api/auth/refresh-token",
         { method: "POST", credentials: "include" }
       );
