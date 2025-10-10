@@ -44,15 +44,73 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      const [farmsRes, recordsRes, salesRes] = await Promise.all([
-        axiosInstance.get("/api/farms"),
-        axiosInstance.get("/api/farms/farmId/records"),
-        axiosInstance.get("/api/farms/farmId/sales"),
-      ]);
+      // Fetch farms first to determine a valid farmId
+      let farmsData = [];
+      try {
+        const farmsRes = await axiosInstance.get("/api/farms");
+        farmsData = farmsRes.data.farms || farmsRes.data || [];
+      } catch (e) {
+        const status = e?.response?.status;
+        if (status !== 404) {
+          console.warn("Farms fetch failed:", e);
+        }
+        farmsData = [];
+      }
 
-      const farmsData = farmsRes.data.farms || farmsRes.data;
-      const recordsData = recordsRes.data.records || recordsRes.data;
-      const salesData = salesRes.data.sales || salesRes.data;
+      // Gather all farm IDs (aggregate across all farms)
+      const farmIds = farmsData.map((f) => f.id || f._id).filter(Boolean);
+
+      // Default to empty arrays if no farm is available
+      let recordsData = [];
+      let salesData = [];
+
+      if (farmIds.length > 0) {
+        // Fetch records and sales for ALL farms in parallel and aggregate
+        const recordPromises = farmIds.map((fid) =>
+          axiosInstance.get(`/api/farms/${fid}/records`)
+        );
+        const salesPromises = farmIds.map((fid) =>
+          axiosInstance.get(`/api/farms/${fid}/sales`)
+        );
+
+        const [recordsSettled, salesSettled] = await Promise.all([
+          Promise.allSettled(recordPromises),
+          Promise.allSettled(salesPromises),
+        ]);
+
+        recordsData = recordsSettled.flatMap((res) => {
+          if (res.status !== "fulfilled") {
+            const status = res.reason?.response?.status;
+            if (status !== 404)
+              console.warn("Records fetch failed:", res.reason);
+            return [];
+          }
+          const rdata = res.value.data;
+          return Array.isArray(rdata?.records)
+            ? rdata.records
+            : Array.isArray(rdata?.data)
+            ? rdata.data
+            : Array.isArray(rdata)
+            ? rdata
+            : [];
+        });
+
+        salesData = salesSettled.flatMap((res) => {
+          if (res.status !== "fulfilled") {
+            const status = res.reason?.response?.status;
+            if (status !== 404) console.warn("Sales fetch failed:", res.reason);
+            return [];
+          }
+          const sdata = res.value.data;
+          return Array.isArray(sdata?.data)
+            ? sdata.data
+            : Array.isArray(sdata?.sales)
+            ? sdata.sales
+            : Array.isArray(sdata)
+            ? sdata
+            : [];
+        });
+      }
 
       setFarms(farmsData);
       setRecords(recordsData);
@@ -99,6 +157,7 @@ export default function DashboardPage() {
         mortalityRate: Math.round(mortalityRate * 100) / 100,
         birdsSold,
       });
+      console.log(farmsData);
     } catch (err) {
       console.error("Failed to fetch dashboard data:", err);
       toast.error("Failed to load dashboard data");
@@ -107,7 +166,47 @@ export default function DashboardPage() {
     }
   };
 
-  // console.log(farmsData);
+  // Derived insights
+  const netProfit = metrics.totalRevenue - metrics.totalExpenses;
+  const profitMarginPct =
+    metrics.totalRevenue > 0 ? (netProfit / metrics.totalRevenue) * 100 : 0;
+  const eggsPerKg =
+    metrics.totalFeed > 0 ? metrics.totalEggs / metrics.totalFeed : 0;
+
+  // Build monthly financial stats from records and sales (last 6 months)
+  const monthMap = new Map();
+  const addMonth = (d) => {
+    const dt = new Date(d);
+    const keyNum = dt.getFullYear() * 12 + dt.getMonth();
+    const keyLabel = dt.toLocaleString(undefined, {
+      month: "short",
+      year: "numeric",
+    });
+    if (!monthMap.has(keyNum)) {
+      monthMap.set(keyNum, {
+        keyNum,
+        label: keyLabel,
+        revenue: 0,
+        expenses: 0,
+      });
+    }
+    return keyNum;
+  };
+  sales.forEach((s) => {
+    if (!s?.date) return;
+    const keyNum = addMonth(s.date);
+    const row = monthMap.get(keyNum);
+    row.revenue += Number(s.revenue ?? s.quantity * s.unitPrice ?? 0);
+  });
+  records.forEach((r) => {
+    if (!r?.date) return;
+    const keyNum = addMonth(r.date);
+    const row = monthMap.get(keyNum);
+    row.expenses += Number(r.expenses ?? 0);
+  });
+  const monthlyStats = Array.from(monthMap.values())
+    .sort((a, b) => b.keyNum - a.keyNum)
+    .slice(0, 6);
 
   if (loading) {
     return (
@@ -379,6 +478,94 @@ export default function DashboardPage() {
                 ))}
             </div>
           </div>
+        </div>
+
+        {/* Financial Insights */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Net Profit</p>
+                <p className="text-3xl font-bold text-gray-900">
+                  ${netProfit.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Profit Margin
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {profitMarginPct.toFixed(1)}%
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">
+                  Eggs per kg Feed
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {eggsPerKg.toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Monthly Financial Trend (last 6 months) */}
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-8 overflow-x-auto">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Monthly Financial Overview
+          </h3>
+          {monthlyStats.length === 0 ? (
+            <p className="text-gray-500">No monthly data yet.</p>
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Month
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Revenue
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Expenses
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Profit
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {monthlyStats.map((m) => {
+                  const profit = m.revenue - m.expenses;
+                  return (
+                    <tr key={m.keyNum} className="hover:bg-gray-50">
+                      <td className="px-4 py-2 text-sm text-gray-900">
+                        {m.label}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-right text-gray-900">
+                        ${m.revenue.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-right text-gray-900">
+                        ${m.expenses.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-2 text-sm text-right text-gray-900">
+                        ${profit.toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
         </div>
 
         {/* Quick Actions */}

@@ -40,6 +40,11 @@ export default function Sidebar() {
       icon: <PiMoneyWavyBold className="text-xl" />,
       label: "Expense Tracker",
     },
+    {
+      path: "/AdminPage/reminders",
+      icon: <PiMoneyWavyBold className="text-xl" />,
+      label: "Reminders",
+    },
   ];
 
   const toggleSidebar = () => {

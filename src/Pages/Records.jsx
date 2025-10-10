@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
-import { FaPlus, FaEdit, FaTrash, FaEye } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import FarmList from "../components/FarmList";
 
 export default function Records() {
   const { axiosInstance, user } = useContext(AuthContext);
@@ -29,6 +28,17 @@ export default function Records() {
   const [editId, setEditId] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Selected farm and farm edit modal state
+  const [selectedFarmId, setSelectedFarmId] = useState("");
+  const [isFarmModalOpen, setIsFarmModalOpen] = useState(false);
+  const [farmFormData, setFarmFormData] = useState({
+    farmName: "",
+    location: "",
+    size: "",
+    farmType: "",
+    description: "",
+  });
+
   // Fetch records
   const fetchRecords = async (farmId) => {
     if (!farmId) return;
@@ -51,8 +61,15 @@ export default function Records() {
   const fetchFarms = async () => {
     try {
       const response = await axiosInstance.get("/api/farms");
-      const activeFarms = response.data.farms.filter((farm) => farm.isActive);
+      const activeFarms =
+        response.data.farms?.filter((farm) => farm.isActive) || [];
       setFarms(activeFarms);
+      // Auto-select first farm if none selected
+      if (activeFarms.length > 0 && !selectedFarmId) {
+        setSelectedFarmId(activeFarms[0].id);
+        setFormData((prev) => ({ ...prev, farmId: activeFarms[0].id }));
+        fetchRecords(activeFarms[0].id);
+      }
     } catch (err) {
       console.error("Failed to fetch farms:", err);
     }
@@ -64,12 +81,12 @@ export default function Records() {
     }
   }, [user]);
 
-  //when farmId changes, fetch records
+  // when selected farm changes, fetch records
   useEffect(() => {
-    if (formData.farmId) {
-      fetchRecords(formData.farmId);
+    if (selectedFarmId) {
+      fetchRecords(selectedFarmId);
     }
-  }, [formData.farmId]);
+  }, [selectedFarmId]);
 
   // Validate form inputs
   const validateForm = () => {
@@ -152,7 +169,7 @@ export default function Records() {
 
       if (editId) {
         await axiosInstance.put(
-          ` /api/farms/${formData.farmId}/records/${editId}`,
+          `/api/farms/${formData.farmId}/records/${editId}`,
           payload
         );
         toast.success("Record updated successfully");
@@ -239,28 +256,130 @@ export default function Records() {
     return farm ? farm.farmName : "Unknown Farm";
   };
 
+  // Farm edit helpers
+  const selectedFarm = farms.find((f) => f.id === selectedFarmId) || null;
+  const openFarmEditModal = () => {
+    if (!selectedFarm) return;
+    setFarmFormData({
+      farmName: selectedFarm.farmName || "",
+      location: selectedFarm.location || "",
+      size: String(selectedFarm.size ?? ""),
+      farmType: selectedFarm.farmType || "",
+      description: selectedFarm.description || "",
+    });
+    setIsFarmModalOpen(true);
+  };
+
+  const submitFarmEdit = async (e) => {
+    e.preventDefault();
+    if (!selectedFarmId) return;
+    try {
+      setActionLoading(true);
+      const payload = {
+        farmName: farmFormData.farmName,
+        location: farmFormData.location,
+        size: parseFloat(farmFormData.size),
+        farmType: farmFormData.farmType,
+        description: farmFormData.description,
+      };
+      await axiosInstance.put(`/api/farms/${selectedFarmId}`, payload);
+      toast.success("Farm updated successfully");
+      setIsFarmModalOpen(false);
+      fetchFarms();
+    } catch (err) {
+      const msg = err.response?.data?.error || "Failed to update farm";
+      toast.error(msg);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const deleteSelectedFarm = async () => {
+    if (!selectedFarmId) return;
+    if (!window.confirm("Are you sure you want to deactivate this farm?"))
+      return;
+    try {
+      setActionLoading(true);
+      await axiosInstance.patch(`/api/farms/${selectedFarmId}`);
+      toast.success("Farm deactivated successfully");
+      // Reset selection and refresh
+      setSelectedFarmId("");
+      setFormData((prev) => ({ ...prev, farmId: "" }));
+      fetchFarms();
+      setRecords([]);
+    } catch (err) {
+      const msg = err.response?.data?.error || "Failed to deactivate farm";
+      toast.error(msg);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   return (
     <div className="py-8 px-4">
       <h1 className="text-4xl font-bold text-center mb-10 bg-gradient-to-r from-[#b58900] to-[#d4a017] bg-clip-text text-transparent">
         Farm Records Management
       </h1>
 
-      {/* Add Record Button */}
-      <div className="flex justify-end mb-6">
-        <button
-          onClick={() => {
-            resetForm();
-            setIsModalOpen(true);
-          }}
-          className="flex items-center gap-2 bg-gradient-to-r from-[#b58900] to-[#d4a017] text-white px-6 py-3 rounded-lg hover:from-[#a57800] hover:to-[#b58900] transition-all duration-300 shadow-lg disabled:opacity-50"
-          disabled={actionLoading}
-        >
-          <FaPlus /> Add Record
-        </button>
+      {/* Farm selector and actions */}
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+        <div className="w-full md:w-1/2">
+          <label
+            className="block text-gray-700 mb-2 font-semibold"
+            htmlFor="farmSelect"
+          >
+            Select Farm
+          </label>
+          <select
+            id="farmSelect"
+            value={selectedFarmId}
+            onChange={(e) => {
+              const fid = e.target.value;
+              setSelectedFarmId(fid);
+              setFormData((prev) => ({ ...prev, farmId: fid }));
+            }}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">-- Choose a farm --</option>
+            {farms.map((farm) => (
+              <option key={farm.id} value={farm.id}>
+                {farm.farmName} ({farm.location})
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              if (!selectedFarmId) {
+                toast.error("Select a farm first");
+                return;
+              }
+              resetForm();
+              setFormData((prev) => ({ ...prev, farmId: selectedFarmId }));
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-2 bg-gradient-to-r from-[#b58900] to-[#d4a017] text-white px-4 py-2 rounded-lg hover:from-[#a57800] hover:to-[#b58900] transition-all duration-300 shadow-md disabled:opacity-50"
+            disabled={actionLoading}
+          >
+            <FaPlus size={16} /> Add Record
+          </button>
+          <button
+            onClick={openFarmEditModal}
+            className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-md disabled:opacity-50"
+            disabled={actionLoading || !selectedFarmId}
+          >
+            <FaEdit size={16} /> Edit Farm
+          </button>
+          <button
+            onClick={deleteSelectedFarm}
+            className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-all duration-300 shadow-md disabled:opacity-50"
+            disabled={actionLoading || !selectedFarmId}
+          >
+            <FaTrash size={16} /> Delete Farm
+          </button>
+        </div>
       </div>
-
-      {/* famlist */}
-      <FarmList />
 
       {/* Records List */}
       {loading ? (
@@ -273,89 +392,219 @@ export default function Records() {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          console.log(records)
-          {Array.isArray(records) >
-            0(
-              records.map((record) => (
-                <div
-                  key={record.id}
-                  className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-[#b58900]/30"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <h2 className="text-xl font-bold text-gray-800">
-                      {getFarmName(record.farmId)}
-                    </h2>
-                    <span className="text-sm text-gray-500">
-                      {new Date(record.date).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <p>
-                      <strong>Feed Used:</strong> {record.feedUsedKg} kg
-                    </p>
-                    <p>
-                      <strong>Eggs Collected:</strong> {record.eggsCollected}
-                    </p>
-                    <p>
-                      <strong>Birds Died:</strong> {record.birdsDied}
-                    </p>
-                    <p>
-                      <strong>Birds Sold:</strong> {record.birdsSold}
-                    </p>
-                    <p>
-                      <strong>Expenses:</strong> ${record.expenses}
-                    </p>
-                    {record.mortialityCause && (
-                      <p className="col-span-2">
-                        <strong>Mortality Cause:</strong>{" "}
-                        {record.mortialityCause}
-                      </p>
-                    )}
-                    {record.weatherInfo && (
-                      <p className="col-span-2">
-                        <strong>Weather:</strong> {record.weatherInfo}
-                      </p>
-                    )}
-                    {record.notes && (
-                      <p className="col-span-2">
-                        <strong>Notes:</strong> {record.notes}
-                      </p>
-                    )}
-                  </div>
-                  {record.photos.length > 0 && (
-                    <div className="mt-4">
-                      <strong>Photos:</strong>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {record.photos.map((photo, index) => (
-                          <img
-                            key={index}
-                            src={photo}
-                            alt={`Photo ${index + 1}`}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  <div className="flex gap-3 items-center mt-4">
-                    <button
-                      onClick={() => handleEdit(record)}
-                      className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-md disabled:opacity-50"
-                      disabled={actionLoading}
-                    >
-                      <FaEdit size={16} /> Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(record.id)}
-                      className="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all duration-300 disabled:opacity-50"
-                      disabled={actionLoading}
-                    >
-                      <FaTrash size={20} />
-                    </button>
+          {records.map((record) => (
+            <div
+              key={record.id}
+              className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-[#b58900]/30"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-xl font-bold text-gray-800">
+                  {getFarmName(record.farmId)}
+                </h2>
+                <span className="text-sm text-gray-500">
+                  {new Date(record.date).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <p>
+                  <strong>Feed Used:</strong> {record.feedUsedKg} kg
+                </p>
+                <p>
+                  <strong>Eggs Collected:</strong> {record.eggsCollected}
+                </p>
+                <p>
+                  <strong>Birds Died:</strong> {record.birdsDied}
+                </p>
+                <p>
+                  <strong>Birds Sold:</strong> {record.birdsSold}
+                </p>
+                <p>
+                  <strong>Expenses:</strong> ${record.expenses}
+                </p>
+                {record.mortialityCause && (
+                  <p className="col-span-2">
+                    <strong>Mortality Cause:</strong> {record.mortialityCause}
+                  </p>
+                )}
+                {record.weatherInfo && (
+                  <p className="col-span-2">
+                    <strong>Weather:</strong> {record.weatherInfo}
+                  </p>
+                )}
+                {record.notes && (
+                  <p className="col-span-2">
+                    <strong>Notes:</strong> {record.notes}
+                  </p>
+                )}
+              </div>
+              {record.photos.length > 0 && (
+                <div className="mt-4">
+                  <strong>Photos:</strong>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {record.photos.map((photo, index) => (
+                      <img
+                        key={index}
+                        src={photo}
+                        alt={`Photo ${index + 1}`}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    ))}
                   </div>
                 </div>
-              ))
-            )}
+              )}
+              <div className="flex gap-3 items-center mt-4">
+                <button
+                  onClick={() => handleEdit(record)}
+                  className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300 shadow-md disabled:opacity-50"
+                  disabled={actionLoading}
+                >
+                  <FaEdit size={16} /> Edit
+                </button>
+                <button
+                  onClick={() =>
+                    handleDelete(selectedFarmId || record.farmId, record.id)
+                  }
+                  className="text-red-500 hover:text-red-700 p-2 rounded-lg hover:bg-red-50 transition-all duration-300 disabled:opacity-50"
+                  disabled={actionLoading}
+                >
+                  <FaTrash size={20} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Modal for Edit Farm */}
+      {isFarmModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white p-8 rounded-lg w-full max-w-2xl shadow-xl">
+            <h2 className="text-2xl font-semibold mb-6 text-center text-gray-900">
+              Edit Farm
+            </h2>
+            <form onSubmit={submitFarmEdit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="farmName"
+                  >
+                    Farm Name
+                  </label>
+                  <input
+                    type="text"
+                    value={farmFormData.farmName}
+                    onChange={(e) =>
+                      setFarmFormData((p) => ({
+                        ...p,
+                        farmName: e.target.value,
+                      }))
+                    }
+                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300"
+                    placeholder="Enter farm name"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="location"
+                  >
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    value={farmFormData.location}
+                    onChange={(e) =>
+                      setFarmFormData((p) => ({
+                        ...p,
+                        location: e.target.value,
+                      }))
+                    }
+                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300"
+                    placeholder="Enter location"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="size"
+                  >
+                    Farm Size (birds)
+                  </label>
+                  <input
+                    type="number"
+                    value={farmFormData.size}
+                    onChange={(e) =>
+                      setFarmFormData((p) => ({ ...p, size: e.target.value }))
+                    }
+                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300"
+                    placeholder="Enter size"
+                    step="0.01"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="farmType"
+                  >
+                    Farm Type
+                  </label>
+                  <input
+                    type="text"
+                    value={farmFormData.farmType}
+                    onChange={(e) =>
+                      setFarmFormData((p) => ({
+                        ...p,
+                        farmType: e.target.value,
+                      }))
+                    }
+                    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 border-gray-300"
+                    placeholder="Poultry or Other"
+                  />
+                </div>
+              </div>
+              <div className="mb-6">
+                <label
+                  className="block text-gray-700 mb-2 font-semibold"
+                  htmlFor="description"
+                >
+                  Description (Optional)
+                </label>
+                <textarea
+                  value={farmFormData.description}
+                  onChange={(e) =>
+                    setFarmFormData((p) => ({
+                      ...p,
+                      description: e.target.value,
+                    }))
+                  }
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter description"
+                  rows="2"
+                />
+              </div>
+              <div className="flex gap-4 justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsFarmModalOpen(false)}
+                  className="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-all duration-300 disabled:opacity-50"
+                  disabled={actionLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 shadow-lg disabled:opacity-50"
+                  disabled={actionLoading}
+                >
+                  {actionLoading ? "Saving..." : "Update Farm"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
