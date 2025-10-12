@@ -8,11 +8,12 @@ import Blogs from "./components/Blogs";
 import AdminPage from "./Pages/AdminPage";
 import NextPage from "./Pages/NextPage";
 import FarmsPage from "./Pages/FarmsPage";
-import IcomeTracking from "./Pages/IcomeTracking";
+import RecordsTracking from "./Pages/Records";
 import OperationsTracking from "./Pages/OperationsTracking";
 import ExpenseTracker from "./Pages/ExpenseTracker";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardPage from "./Pages/DashboardPage";
+import FarmRecords from "./components/FarmRecords";
 
 function App() {
   return (
@@ -37,10 +38,13 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<DashboardPage/>} />
-            <Route path="dashboard" element={<DashboardPage/>} />
+            <Route index element={<DashboardPage />} />
+            <Route path="dashboard" element={<DashboardPage />} />
             <Route path="farm" element={<FarmsPage />} />
-            <Route path="icometracking" element={<IcomeTracking />} />
+
+            <Route path="farms/:farmId/records" element={<FarmRecords />} />
+
+            <Route path="records" element={<RecordsTracking />} />
             <Route path="operationTracking" element={<OperationsTracking />} />
             <Route path="expense" element={<ExpenseTracker />} />
           </Route>

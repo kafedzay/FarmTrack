@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
 import { GrClose, GrMoney } from "react-icons/gr";
-import { PiMoneyWavyBold } from "react-icons/pi";
+import { PiMoneyWavyBold, PiFarmFill } from "react-icons/pi";
 import { RiDashboardFill } from "react-icons/ri";
 import { AuthContext } from "../context/AuthContext";
 import { useContext } from "react";
@@ -23,17 +23,17 @@ export default function Sidebar() {
     {
       path: "/AdminPage/farm",
       icon: <FaHome className="text-xl" />,
-      label: "Farms",
+      label: "Create Farm",
     },
     {
-      path: "/AdminPage/icometracking",
+      path: "/AdminPage/records",
       icon: <GrMoney className="text-xl" />,
-      label: "Income Tracking",
+      label: "Farm Records",
     },
     {
-      path: "/AdminPage/operationTracking",
+      path: "/AdminPage/sales",
       icon: <FaChartBar className="text-xl" />,
-      label: "Operation Tracking",
+      label: "Sales Tracking",
     },
     {
       path: "/AdminPage/expense",
@@ -59,7 +59,7 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
+    navigate("/login");
     closeMobileMenu();
   };
 
@@ -84,7 +84,7 @@ export default function Sidebar() {
 
       {/* Sidebar: Changed to white background (bg-white) and dark text (text-gray-800) */}
       <div
-        className={`bg-white text-gray-800 shadow-xl transition-all duration-300 ease-in-out
+        className={`bg-[#b58900] text-white shadow-lg transition-all duration-300 ease-in-out
           ${isCollapsed ? "w-16" : "w-64"} 
           ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} 
           md:translate-x-0 fixed md:static z-40 top-14 md:top-0 h-[calc(100vh-3.5rem)] md:h-screen flex flex-col`}
@@ -113,10 +113,8 @@ export default function Sidebar() {
               key={page.path}
               to={page.path}
               className={({ isActive }) =>
-                // Link Style: Default text is dark, icon is yellowish. Hover/Active background is yellowish, text is white.
-                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/90 hover:text-white 
-                ${isActive ? "bg-[#b58900] text-white shadow-md" : "text-gray-700"}
-                `
+                `flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 ${isActive ? "bg-[#a57800] text-yellow-100 shadow-sm" : ""
+                }`
               }
               onClick={closeMobileMenu}
               aria-label={page.label}
