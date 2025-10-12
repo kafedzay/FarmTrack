@@ -11,9 +11,11 @@ import FarmsPage from "./Pages/FarmsPage";
 import RecordsTracking from "./Pages/Records";
 import OperationsTracking from "./Pages/OperationsTracking";
 import ExpenseTracker from "./Pages/ExpenseTracker";
+import Reminders from "./Pages/Reminders";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardPage from "./Pages/DashboardPage";
 import FarmRecords from "./components/FarmRecords";
+import Sales from "./Pages/Sales";
 
 function App() {
   return (
@@ -45,8 +47,10 @@ function App() {
             <Route path="farms/:farmId/records" element={<FarmRecords />} />
 
             <Route path="records" element={<RecordsTracking />} />
+            <Route path="sales" element={<Sales />} />
             <Route path="operationTracking" element={<OperationsTracking />} />
             <Route path="expense" element={<ExpenseTracker />} />
+            <Route path="reminders" element={<Reminders />} />
           </Route>
         </Routes>
       </div>
