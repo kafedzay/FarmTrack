@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   const refreshToken = async () => {
     try {
       const res = await fetch(
-        (import.meta.env.VITE_API_URL || "http://localhost:5500") +
+        (import.meta.env.VITE_API_URL || "https://farmtrack-api.onrender.com") +
           "/api/auth/refresh-token",
         { method: "POST", credentials: "include" }
       );

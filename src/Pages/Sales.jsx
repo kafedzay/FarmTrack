@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 export default function Sales() {
   const { axiosInstance, user } = useContext(AuthContext);
+  const location = useLocation();
 
   const [farms, setFarms] = useState([]);
   const [selectedFarmId, setSelectedFarmId] = useState("");
@@ -25,6 +27,11 @@ export default function Sales() {
     date: "",
     notes: "",
   });
+
+  // Filters
+  const [searchTerm, setSearchTerm] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const fetchFarms = async () => {
     try {
@@ -71,6 +78,13 @@ export default function Sales() {
   useEffect(() => {
     if (selectedFarmId) fetchSales(selectedFarmId);
   }, [selectedFarmId]);
+
+  // Auto-open create modal when coming from dashboard quick action
+  useEffect(() => {
+    if (location.state?.openCreate && selectedFarmId) {
+      openCreateModal();
+    }
+  }, [location.state, selectedFarmId]);
 
   const validateForm = () => {
     const errors = {};
@@ -183,6 +197,81 @@ export default function Sales() {
     [farms, selectedFarmId]
   );
 
+  // Derived: filtered list and totals
+  const filteredSales = useMemo(() => {
+    let list = [...sales];
+    if (searchTerm.trim()) {
+      const q = searchTerm.trim().toLowerCase();
+      list = list.filter((s) =>
+        [s.product, s.buyerName, s.notes]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(q))
+      );
+    }
+    if (dateFrom) {
+      const from = new Date(dateFrom);
+      list = list.filter((s) => new Date(s.date) >= from);
+    }
+    if (dateTo) {
+      const to = new Date(dateTo);
+      to.setHours(23, 59, 59, 999);
+      list = list.filter((s) => new Date(s.date) <= to);
+    }
+    return list.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }, [sales, searchTerm, dateFrom, dateTo]);
+
+  const totals = useMemo(() => {
+    const totalRevenue = filteredSales.reduce(
+      (sum, s) => sum + Number(s.revenue ?? s.quantity * s.unitPrice ?? 0),
+      0
+    );
+    const totalQty = filteredSales.reduce(
+      (sum, s) => sum + Number(s.quantity ?? 0),
+      0
+    );
+    return { totalRevenue, totalQty };
+  }, [filteredSales]);
+
+  // Export CSV of current filtered list
+  const handleExportCSV = () => {
+    if (!filteredSales.length) {
+      toast.info("No sales to export");
+      return;
+    }
+    const headers = [
+      "Date",
+      "Product",
+      "Quantity",
+      "Unit Price",
+      "Revenue",
+      "Buyer",
+      "Notes",
+    ];
+    const rows = filteredSales.map((s) => [
+      new Date(s.date).toISOString(),
+      s.product,
+      s.quantity,
+      s.unitPrice,
+      (s.revenue ?? s.quantity * s.unitPrice).toFixed(2),
+      s.buyerName || "",
+      (s.notes || "").replace(/\n|\r/g, " "),
+    ]);
+    const csv = [headers, ...rows]
+      .map((r) =>
+        r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      )
+      .join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `sales_${selectedFarmId}_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="py-8 px-4">
       <h1 className="text-4xl font-bold text-center mb-10 bg-gradient-to-r from-[#b58900] to-[#d4a017] bg-clip-text text-transparent">
@@ -223,14 +312,81 @@ export default function Sales() {
         </div>
       </div>
 
+      {/* Filters / Summary */}
+      <div className="bg-white rounded-xl shadow-md border border-gray-200 p-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+          <div className="md:col-span-2">
+            <label className="block text-gray-700 mb-1 text-sm">Search</label>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search product, buyer or notes"
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 mb-1 text-sm">From</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div>
+            <label className="block text-gray-700 mb-1 text-sm">To</label>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                setSearchTerm("");
+                setDateFrom("");
+                setDateTo("");
+              }}
+              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg"
+            >
+              Clear
+            </button>
+            <button
+              onClick={handleExportCSV}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg"
+            >
+              Export CSV
+            </button>
+          </div>
+        </div>
+        <div className="mt-3 text-sm text-gray-700">
+          <span className="mr-4">
+            Total Qty: <strong>{totals.totalQty}</strong>
+          </span>
+          <span>
+            Total Revenue: <strong>${totals.totalRevenue.toFixed(2)}</strong>
+          </span>
+        </div>
+      </div>
+
       {/* Sales Table */}
       {loading ? (
         <div className="text-center py-8">Loading sales...</div>
       ) : error ? (
         <div className="text-center py-8 text-red-500">{error}</div>
-      ) : sales.length === 0 ? (
+      ) : filteredSales.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
-          No sales found. Add one to get started!
+          No sales match your filters. Adjust filters or
+          <button
+            className="ml-2 text-blue-600 underline"
+            onClick={openCreateModal}
+          >
+            add a sale
+          </button>
+          .
         </div>
       ) : (
         <div className="overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200">
@@ -264,7 +420,7 @@ export default function Sales() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {sales.map((s) => (
+              {filteredSales.map((s) => (
                 <tr key={s.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                     {new Date(s.date).toLocaleDateString()}
@@ -279,7 +435,7 @@ export default function Sales() {
                     ${Number(s.unitPrice).toFixed(2)}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-gray-900">
-                    ${Number(s.revenue || s.quantity * s.unitPrice).toFixed(2)}
+                    ${Number(s.revenue ?? s.quantity * s.unitPrice).toFixed(2)}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
                     {s.buyerName || "-"}

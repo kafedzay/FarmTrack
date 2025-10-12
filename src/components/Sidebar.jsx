@@ -22,8 +22,8 @@ export default function Sidebar() {
     },
     {
       path: "/AdminPage/farm",
-      icon: <FaHome className="text-xl" />,
-      label: "Create Farm",
+      icon: <PiFarmFill className="text-xl" />,
+      label: "Farm Management",
     },
     {
       path: "/AdminPage/records",
@@ -44,6 +44,11 @@ export default function Sidebar() {
       path: "/AdminPage/reminders",
       icon: <PiMoneyWavyBold className="text-xl" />,
       label: "Reminders",
+    },
+    {
+      path: "/AdminPage/financials",
+      icon: <PiMoneyWavyBold className="text-xl" />,
+      label: "Financials",
     },
   ];
 
@@ -84,7 +89,16 @@ export default function Sidebar() {
             <FaBars className="text-xl" />
           )}
         </button>
-        <span className="text-xl font-semibold tracking-tight">FarmTrack</span>
+        <button
+          onClick={() => {
+            navigate("/");
+            setIsMobileMenuOpen(false);
+          }}
+          className="text-xl font-semibold tracking-tight"
+          aria-label="Go Home"
+        >
+          FarmTrack
+        </button>
       </div>
 
       {/* Sidebar: Changed to white background (bg-white) and dark text (text-gray-800) */}
@@ -97,7 +111,7 @@ export default function Sidebar() {
         <div className="flex items-center justify-between p-4">
           {/* Logo/Title: Used yellowish color for the title */}
           {!isCollapsed && (
-            <h1 className="text-2xl font-semibold tracking-tight text-[#b58900]">FarmTrack</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">FarmTrack</h1>
           )}
           {/* Toggle Button: Used yellowish color for the icon/hover */}
           <button
@@ -133,8 +147,8 @@ export default function Sidebar() {
           ))}
         </nav>
         {/* Logout Button */}
-        <div className="p-4 mt-auto border-t border-gray-100">
-          <h1 className="font-semibold text-sm mb-2 text-gray-600">Welcome {user?.email} 👋</h1>
+        <div className="p-4 mt-auto">
+          <h1 className="font-bold">Welcome {user?.email} 👋</h1>
           <button
             className="flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out text-gray-700 hover:bg-[#a57800]/90 hover:text-white w-full text-left"
             onClick={handleLogout}

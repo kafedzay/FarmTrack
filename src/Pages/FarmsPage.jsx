@@ -35,9 +35,18 @@ const CreateFarm = () => {
       const activeFarms = response.data.farms.filter((farm) => farm.isActive);
       setFarms(activeFarms);
     } catch (err) {
-      const errorMessage = err.response?.data?.error || "Failed to fetch farms";
-      setError(errorMessage);
-      toast.error(errorMessage);
+      if (err.response?.status === 404) {
+        // No farms found: show empty state without error
+        setFarms([]);
+        setError(null);
+      } else {
+        const errorMessage =
+          err.response?.data?.error ||
+          err.response?.data?.message ||
+          "Failed to fetch farms";
+        setError(errorMessage);
+        toast.error(errorMessage);
+      }
     } finally {
       setLoading(false);
     }
@@ -190,8 +199,22 @@ const CreateFarm = () => {
       ) : error ? (
         <div className="text-center py-8 text-red-500">{error}</div>
       ) : farms.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No active farms found. Create one to get started!
+        <div className="text-center py-12 text-gray-600">
+          <p className="mb-4">
+            No active farms found. Create one to get started.
+          </p>
+          {/* <button
+            onClick={() => {
+              setFormData({ farmName: "", location: "", size: "", farmType: "", description: "" });
+              setEditId(null);
+              setFormErrors({});
+              setIsModalOpen(true);
+            }}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#b58900] to-[#d4a017] text-white px-6 py-3 rounded-lg hover:from-[#a57800] hover:to-[#b58900] transition-all duration-300 shadow-lg disabled:opacity-50"
+            disabled={actionLoading}
+          >
+            <FaPlus /> Create Farm
+          </button> */}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -207,7 +230,7 @@ const CreateFarm = () => {
                 <strong>Location:</strong> {farm.location}
               </p>
               <p className="text-gray-600 mb-2">
-                <strong>Size:</strong> {farm.size} acres
+                <strong>Size:</strong> {farm.size} birds
               </p>
               {farm.farmType && (
                 <p className="text-gray-600 mb-2">
@@ -319,7 +342,7 @@ const CreateFarm = () => {
                     className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                       formErrors.size ? "border-red-500" : "border-gray-300"
                     }`}
-                    placeholder="Enter farm size in acres"
+                    placeholder="Enter farm number of birds"
                     step="0.01"
                     required
                   />

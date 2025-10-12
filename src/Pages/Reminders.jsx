@@ -2,9 +2,11 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { useLocation } from "react-router-dom";
 
 export default function Reminders() {
   const { axiosInstance, user } = useContext(AuthContext);
+  const location = useLocation();
 
   const [farms, setFarms] = useState([]);
   const [selectedFarmId, setSelectedFarmId] = useState("");
@@ -71,6 +73,22 @@ export default function Reminders() {
     if (selectedFarmId) fetchReminders(selectedFarmId);
   }, [selectedFarmId]);
 
+  // Auto-open create modal when coming from dashboard quick action
+  useEffect(() => {
+    if (location.state?.openCreate && selectedFarmId) {
+      setEditId(null);
+      setFormErrors({});
+      setFormData({
+        title: "",
+        type: "General",
+        date: new Date().toISOString().slice(0, 10),
+        time: "08:00",
+        isCompleted: false,
+      });
+      setIsModalOpen(true);
+    }
+  }, [location.state, selectedFarmId]);
+
   const validateForm = () => {
     const errors = {};
     if (!formData.title.trim()) errors.title = "Title is required";
@@ -111,6 +129,24 @@ export default function Reminders() {
       isCompleted: Boolean(rem.isCompleted) || false,
     });
     setIsModalOpen(true);
+  };
+
+  const handleToggleComplete = async (reminderId, current) => {
+    if (!selectedFarmId) return;
+    try {
+      setActionLoading(true);
+      await axiosInstance.patch(
+        `/api/farms/${selectedFarmId}/reminders/${reminderId}`,
+        { isCompleted: !current }
+      );
+      fetchReminders(selectedFarmId);
+    } catch (err) {
+      toast.error(
+        err.response?.data?.error || "Failed to update reminder status"
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const handleDelete = async (reminderId) => {
@@ -229,27 +265,61 @@ export default function Reminders() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Due Date
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Type
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Title
+                </th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {reminders.map((r) => {
                 const dt = r.dueDate ? new Date(r.dueDate) : null;
                 const dtLabel = dt
-                  ? `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                  ? `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}`
                   : "";
                 return (
                   <tr key={r.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{dtLabel}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{r.type}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{r.title}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">{r.isCompleted ? "Completed" : "Pending"}</td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      {dtLabel}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      {r.type}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      {r.title}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                      {r.isCompleted ? "Completed" : "Pending"}
+                    </td>
                     <td className="px-4 py-3 whitespace-nowrap text-sm text-right">
                       <div className="flex gap-2 justify-end">
+                        <button
+                          onClick={() =>
+                            handleToggleComplete(r.id, r.isCompleted)
+                          }
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-md text-white ${
+                            r.isCompleted
+                              ? "bg-gray-500 hover:bg-gray-600"
+                              : "bg-green-600 hover:bg-green-700"
+                          }`}
+                          disabled={actionLoading}
+                        >
+                          {r.isCompleted ? "Mark Pending" : "Mark Complete"}
+                        </button>
                         <button
                           onClick={() => openEditModal(r)}
                           className="inline-flex items-center gap-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-md"
@@ -284,25 +354,43 @@ export default function Reminders() {
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="md:col-span-2">
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="title">Title</label>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="title"
+                  >
+                    Title
+                  </label>
                   <input
                     type="text"
                     id="title"
                     value={formData.title}
-                    onChange={(e) => setFormData((p) => ({ ...p, title: e.target.value }))}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.title ? "border-red-500" : "border-gray-300"}`}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, title: e.target.value }))
+                    }
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      formErrors.title ? "border-red-500" : "border-gray-300"
+                    }`}
                     placeholder="e.g., Vaccination, Feed Purchase"
                   />
                   {formErrors.title && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.title}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {formErrors.title}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="type">Type</label>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="type"
+                  >
+                    Type
+                  </label>
                   <select
                     id="type"
                     value={formData.type}
-                    onChange={(e) => setFormData((p) => ({ ...p, type: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, type: e.target.value }))
+                    }
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="General">General</option>
@@ -313,37 +401,69 @@ export default function Reminders() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="date">Date</label>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="date"
+                  >
+                    Date
+                  </label>
                   <input
                     type="date"
                     id="date"
                     value={formData.date}
-                    onChange={(e) => setFormData((p) => ({ ...p, date: e.target.value }))}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.date ? "border-red-500" : "border-gray-300"}`}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, date: e.target.value }))
+                    }
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      formErrors.date ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
                   {formErrors.date && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.date}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {formErrors.date}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="time">Time</label>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="time"
+                  >
+                    Time
+                  </label>
                   <input
                     type="time"
                     id="time"
                     value={formData.time}
-                    onChange={(e) => setFormData((p) => ({ ...p, time: e.target.value }))}
-                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${formErrors.time ? "border-red-500" : "border-gray-300"}`}
+                    onChange={(e) =>
+                      setFormData((p) => ({ ...p, time: e.target.value }))
+                    }
+                    className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      formErrors.time ? "border-red-500" : "border-gray-300"
+                    }`}
                   />
                   {formErrors.time && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.time}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {formErrors.time}
+                    </p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-semibold" htmlFor="status">Status</label>
+                  <label
+                    className="block text-gray-700 mb-2 font-semibold"
+                    htmlFor="status"
+                  >
+                    Status
+                  </label>
                   <select
                     id="status"
                     value={formData.isCompleted ? "Completed" : "Pending"}
-                    onChange={(e) => setFormData((p) => ({ ...p, isCompleted: e.target.value === "Completed" }))}
+                    onChange={(e) =>
+                      setFormData((p) => ({
+                        ...p,
+                        isCompleted: e.target.value === "Completed",
+                      }))
+                    }
                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="Pending">Pending</option>
