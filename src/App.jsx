@@ -16,6 +16,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardPage from "./Pages/DashboardPage";
 import FarmRecords from "./components/FarmRecords";
 import Sales from "./Pages/Sales";
+import Financials from "./Pages/Financials";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
             <Route path="operationTracking" element={<OperationsTracking />} />
             <Route path="expense" element={<ExpenseTracker />} />
             <Route path="reminders" element={<Reminders />} />
+            <Route path="financials" element={<Financials />} />
           </Route>
         </Routes>
       </div>

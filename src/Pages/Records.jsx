@@ -3,6 +3,7 @@ import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useLocation } from "react-router-dom";
 
 export default function Records() {
   const { axiosInstance, user } = useContext(AuthContext);
@@ -82,11 +83,22 @@ export default function Records() {
   }, [user]);
 
   // when selected farm changes, fetch records
+  const location = useLocation();
+
   useEffect(() => {
     if (selectedFarmId) {
       fetchRecords(selectedFarmId);
     }
   }, [selectedFarmId]);
+
+  // If navigated from dashboard with state.openCreate, open modal when farm is selected
+  useEffect(() => {
+    if (location.state?.openCreate && selectedFarmId) {
+      resetForm();
+      setFormData((prev) => ({ ...prev, farmId: selectedFarmId }));
+      setIsModalOpen(true);
+    }
+  }, [location.state, selectedFarmId]);
 
   // Validate form inputs
   const validateForm = () => {

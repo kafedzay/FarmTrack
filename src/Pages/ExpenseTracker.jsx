@@ -1,7 +1,5 @@
-import React from 'react'
+import React from "react";
 
 export default function ExpenseTracker() {
-  return (
-    <div>ExpenseTracker</div>
-  )
+  return <div>ExpenseTracker</div>;
 }

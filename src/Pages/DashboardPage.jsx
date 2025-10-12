@@ -15,9 +15,11 @@ import {
 } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
   const { axiosInstance, user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [farms, setFarms] = useState([]);
   const [records, setRecords] = useState([]);
@@ -39,7 +41,7 @@ export default function DashboardPage() {
     }
   }, [user]);
 
-  console.log(user);
+  // console.log(user);
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -172,6 +174,41 @@ export default function DashboardPage() {
     metrics.totalRevenue > 0 ? (netProfit / metrics.totalRevenue) * 100 : 0;
   const eggsPerKg =
     metrics.totalFeed > 0 ? metrics.totalEggs / metrics.totalFeed : 0;
+  const costPerEgg =
+    metrics.totalEggs > 0 ? metrics.totalExpenses / metrics.totalEggs : 0;
+
+  // Revenue breakdown by product
+  const productAgg = new Map();
+  sales.forEach((s) => {
+    const key = s.product || "Unknown";
+    if (!productAgg.has(key)) productAgg.set(key, { quantity: 0, revenue: 0 });
+    const row = productAgg.get(key);
+    row.quantity += Number(s.quantity || 0);
+    row.revenue += Number(s.revenue ?? s.quantity * s.unitPrice ?? 0);
+  });
+  const revenueByProduct = Array.from(productAgg.entries())
+    .map(([product, { quantity, revenue }]) => ({ product, quantity, revenue }))
+    .sort((a, b) => b.revenue - a.revenue);
+
+  // Last 7 days eggs and mortality trend
+  const dayLabels = [];
+  const now = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    dayLabels.push(key);
+  }
+  const dayMap = new Map(dayLabels.map((d) => [d, { eggs: 0, deaths: 0 }]));
+  records.forEach((r) => {
+    if (!r?.date) return;
+    const k = new Date(r.date).toISOString().slice(0, 10);
+    if (!dayMap.has(k)) return;
+    const row = dayMap.get(k);
+    row.eggs += Number(r.eggsCollected || 0);
+    row.deaths += Number(r.birdsDied || 0);
+  });
+  const last7DaysTrend = dayLabels.map((d) => ({ date: d, ...dayMap.get(d) }));
 
   // Build monthly financial stats from records and sales (last 6 months)
   const monthMap = new Map();
@@ -568,25 +605,135 @@ export default function DashboardPage() {
           )}
         </div>
 
+        {/* Additional KPIs */}
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Additional KPIs
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-lg shadow border border-gray-200 p-6">
+              <p className="text-sm font-medium text-gray-600">Cost per Egg</p>
+              <p className="text-3xl font-bold text-gray-900">
+                ${costPerEgg.toFixed(4)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Revenue Breakdown */}
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-8 overflow-x-auto">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Product Revenue Breakdown
+          </h3>
+          {revenueByProduct.length === 0 ? (
+            <p className="text-gray-500">No sales data available.</p>
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Product
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Quantity
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Revenue
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {revenueByProduct.map((row) => (
+                  <tr key={row.product} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 text-sm text-gray-900">
+                      {row.product}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-right text-gray-900">
+                      {row.quantity}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-right text-gray-900">
+                      ${row.revenue.toFixed(2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Last 7 Days Trend */}
+        <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 mb-8 overflow-x-auto">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Last 7 Days: Eggs & Mortality
+          </h3>
+          {last7DaysTrend.every((d) => d.eggs === 0 && d.deaths === 0) ? (
+            <p className="text-gray-500">No recent record data.</p>
+          ) : (
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Eggs
+                  </th>
+                  <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Deaths
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {last7DaysTrend.map((row) => (
+                  <tr key={row.date} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 text-sm text-gray-900">
+                      {new Date(row.date).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-right text-gray-900">
+                      {row.eggs}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-right text-gray-900">
+                      {row.deaths}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Quick Actions
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button className="flex items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors">
+            <button
+              onClick={() =>
+                navigate("/AdminPage/records", { state: { openCreate: true } })
+              }
+              className="flex items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
+            >
               <Package className="h-5 w-5 text-blue-600 mr-2" />
               <span className="text-sm font-medium text-blue-900">
                 Add New Record
               </span>
             </button>
-            <button className="flex items-center justify-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+            <button
+              onClick={() =>
+                navigate("/AdminPage/sales", { state: { openCreate: true } })
+              }
+              className="flex items-center justify-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+            >
               <DollarSign className="h-5 w-5 text-green-600 mr-2" />
               <span className="text-sm font-medium text-green-900">
                 Record Sale
               </span>
             </button>
-            <button className="flex items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+            <button
+              onClick={() => navigate("/AdminPage/farm")}
+              className="flex items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+            >
               <MapPin className="h-5 w-5 text-purple-600 mr-2" />
               <span className="text-sm font-medium text-purple-900">
                 Manage Farms

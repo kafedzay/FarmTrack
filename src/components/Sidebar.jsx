@@ -23,7 +23,7 @@ export default function Sidebar() {
     {
       path: "/AdminPage/farm",
       icon: <PiFarmFill className="text-xl" />,
-      label: "Create Farm",
+      label: "Farm Management",
     },
     {
       path: "/AdminPage/records",
@@ -44,6 +44,11 @@ export default function Sidebar() {
       path: "/AdminPage/reminders",
       icon: <PiMoneyWavyBold className="text-xl" />,
       label: "Reminders",
+    },
+    {
+      path: "/AdminPage/financials",
+      icon: <PiMoneyWavyBold className="text-xl" />,
+      label: "Financials",
     },
   ];
 
@@ -84,7 +89,16 @@ export default function Sidebar() {
             <FaBars className="text-xl" />
           )}
         </button>
-        <span className="text-xl font-semibold tracking-tight">FarmTrack</span>
+        <button
+          onClick={() => {
+            navigate("/");
+            setIsMobileMenuOpen(false);
+          }}
+          className="text-xl font-semibold tracking-tight"
+          aria-label="Go Home"
+        >
+          FarmTrack
+        </button>
       </div>
 
       {/* Sidebar */}
@@ -96,7 +110,13 @@ export default function Sidebar() {
       >
         <div className="flex items-center justify-between p-4">
           {!isCollapsed && (
-            <h1 className="text-2xl font-semibold tracking-tight">FarmTrack</h1>
+            <NavLink
+              onClick={() => navigate("/")}
+              className="text-2xl font-semibold tracking-tight text-left hover:cursor"
+              aria-label="Go Home"
+            >
+              FarmTrack
+            </NavLink>
           )}
           <button
             className="p-2 hidden md:block rounded-md hover:bg-[#a57800]/80 transition-all duration-200"
@@ -130,7 +150,7 @@ export default function Sidebar() {
         </nav>
         {/* Logout Button */}
         <div className="p-4 mt-auto">
-          <h1 className="font-bold">Welcome {user?.email} 👋</h1>
+          {/* <h1 className="font-bold">Welcome {user?.name} 👋</h1> */}
           <button
             className="flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 w-full text-left"
             onClick={handleLogout}

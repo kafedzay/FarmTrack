@@ -1,18 +1,25 @@
-import { useState } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom'; 
-import { Menu, X, Info, Star, Phone, User } from 'lucide-react';
+import { useContext, useState } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Menu, X, Info, Star, Phone, User } from "lucide-react";
+import { AuthContext } from "../context/AuthContext";
 
 const Navbar = () => {
+  const { user } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  const navItems = [
-    { name: 'About', icon: Info, href: '/AboutSection' },
-    { name: 'Features', icon: Star, href: '/features' },
-    { name: 'Blogs', icon: Info, href: '/Blogs' },
-    { name: 'Contact Us', icon: Phone, href: '/contact' },
-    { name: 'Login/Register', icon: User, href: '/login' }, 
+  // Build nav items; on home page and if logged in, show Dashboard instead of Login/Register
+  const baseItems = [
+    { name: "About", icon: Info, href: "/AboutSection" },
+    { name: "Features", icon: Star, href: "/features" },
+    { name: "Blogs", icon: Info, href: "/Blogs" },
+    { name: "Contact Us", icon: Phone, href: "/contact" },
   ];
+  const authItem =
+    user && location.pathname === "/"
+      ? { name: "Dashboard", icon: User, href: "/AdminPage/dashboard" }
+      : { name: "Login/Register", icon: User, href: "/login" };
+  const navItems = [...baseItems, authItem];
 
   return (
     <nav className="bg-gradient-to-r from-[#b58900] to-[#d4a017] text-white shadow-2xl fixed w-full z-50 top-0">
@@ -20,12 +27,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20 lg:h-24">
           {/* Logo as Home Button */}
           <div className="flex-shrink-0">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className={`text-3xl lg:text-4xl font-extrabold tracking-tight transition-all duration-300 ease-in-out transform hover:scale-105 ${
-                location.pathname === '/' 
-                  ? 'text-yellow-100 border-b-4  border-yellow-100' 
-                  : 'hover:text-yellow-100'
+                location.pathname === "/"
+                  ? "text-yellow-100 border-b-4  border-yellow-100"
+                  : "hover:text-yellow-100"
               }`}
               aria-label="FarmTrack Home"
             >
@@ -41,7 +48,9 @@ const Navbar = () => {
                 to={item.href}
                 className={({ isActive }) =>
                   `flex items-center space-x-3 text-lg font-semibold transition-all duration-300 ease-in-out transform hover:scale-105 hover:text-yellow-100 group ${
-                    isActive ? 'text-yellow-100 border-b-4  border-yellow-100' : ''
+                    isActive
+                      ? "text-yellow-100 border-b-4  border-yellow-100"
+                      : ""
                   }`
                 }
                 aria-label={item.name}
@@ -57,10 +66,14 @@ const Navbar = () => {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="inline-flex items-center justify-center p-3 rounded-lg hover:text-yellow-100 focus:outline-none focus:ring-2 focus:ring-yellow-100 transition-all duration-300"
-              aria-label={isOpen ? 'Close Menu' : 'Open Menu'}
+              aria-label={isOpen ? "Close Menu" : "Open Menu"}
               aria-expanded={isOpen}
             >
-              {isOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
+              {isOpen ? (
+                <X className="h-8 w-8" />
+              ) : (
+                <Menu className="h-8 w-8" />
+              )}
             </button>
           </div>
         </div>
@@ -76,7 +89,7 @@ const Navbar = () => {
                 to={item.href}
                 className={({ isActive }) =>
                   `flex items-center space-x-4 px-4 py-3 rounded-lg text-lg font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-[#d4a017] hover:text-yellow-100 ${
-                    isActive ? 'bg-[#d4a017] text-yellow-100 shadow-md' : ''
+                    isActive ? "bg-[#d4a017] text-yellow-100 shadow-md" : ""
                   }`
                 }
                 onClick={() => setIsOpen(false)}
