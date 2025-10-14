@@ -1,4 +1,83 @@
-import heroImage from '../assets/chickslanding.jpg';
+// import heroimg1 from '../assets/Heroimg1.png';
+// import { Link } from 'react-router-dom';
+// import pic from '../assets/pic.jpg';
+// import FooterSection from './FooterSection';
+// import Navbar from './NavBar';
+
+// const HeroSection = () => {
+//   return (
+//     <div>
+//        <Navbar />
+//       <section className="bg-white mt-20 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+//       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+//         {/* Text Content */}
+//         <div className="lg:w-1/2 text-center lg:text-left space-y-6">
+//           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-yellow-700 tracking-tight">
+//             Perfect software for your poultry business
+//           </h1>
+//           <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
+//             Transform your poultry farming with FarmTrack's smart tracking and management solutions. 
+//             Effortlessly monitor your flock's health, egg production, feed consumption, and farm resources 
+//             in real-time with our intuitive tools designed specifically for poultry farmers.
+//           </p>
+//           <div className="flex justify-center lg:justify-start gap-4">
+//             <Link
+//               to="/login"
+//               className="inline-block bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg 
+//               hover:bg-yellow-600 transition-colors duration-300 text-base sm:text-lg"
+//             >
+//               Get Started
+//             </Link>
+//             <Link
+//               to="/features"
+//               className="inline-block bg-transparent border-2 border-yellow-500 text-yellow-700 
+//               font-semibold px-6 py-3 rounded-lg hover:bg-yellow-50 transition-colors duration-300 text-base sm:text-lg"
+//             >
+//               Explore Features
+//             </Link>
+//           </div>
+//           <div className="mt-6 text-gray-600 text-sm sm:text-base">
+//             <p>Why FarmTrack?</p>
+//             <ul className="list-disc list-inside space-y-2 mt-2">
+//               <li>Real-time monitoring of poultry health and growth metrics</li>
+//               <li>Automated egg production tracking and analytics</li>
+//               <li>Optimize feed schedules and reduce waste</li>
+//               <li>Scalable solutions for small and large poultry farms</li>
+//             </ul>
+//           </div>
+//         </div>
+//         {/* Image */}
+//         <div className="lg:w-1/2 mt-8 lg:mt-0">
+//           <img
+//             src={heroimg1}
+//             alt="Poultry farm with smart tracking technology"
+//             className="w-full h-auto rounded-lg shadow-lg object-cover max-h-[300px] sm:max-h-[300px] lg:max-h-[450px]"
+//           />
+//           <div className="mt-4 flex justify-center gap-4">
+//             <img
+//               src={pic}
+//               alt="Healthy chickens in farm"
+//               className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-md object-cover"
+//             />
+//             <img
+//               src={heroimg1}
+//               alt="FarmTrack dashboard preview"
+//               className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-md object-cover"
+//             />
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//     <FooterSection />
+//     </div>
+//   );
+// };
+
+// export default HeroSection;
+
+
+
+import heroimg1 from '../assets/Heroimg1.png';
 import { Link } from 'react-router-dom';
 import pic from '../assets/pic.jpg';
 import FooterSection from './FooterSection';
@@ -7,68 +86,164 @@ import Navbar from './NavBar';
 const HeroSection = () => {
   return (
     <div>
-       <Navbar />
+      <Navbar />
+      {/* Existing Hero Section Content - DO NOT CHANGE */}
       <section className="bg-white mt-20 min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
-        {/* Text Content */}
-        <div className="lg:w-1/2 text-center lg:text-left space-y-6">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-800 tracking-tight">
-            Welcome to FarmTrack
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
-            Transform your poultry farming with FarmTrack's smart tracking and management solutions. 
-            Effortlessly monitor your flock's health, egg production, feed consumption, and farm resources 
-            in real-time with our intuitive tools designed specifically for poultry farmers.
+        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+          {/* Text Content */}
+          <div className="lg:w-1/2 text-center lg:text-left space-y-6">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-yellow-700 tracking-tight">
+              Perfect software for your poultry business
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-600 leading-relaxed">
+              Transform your poultry farming with FarmTrack's smart tracking and management solutions.
+              Effortlessly monitor your flock's health, egg production, feed consumption, and farm resources
+              in real-time with our intuitive tools designed specifically for poultry farmers.
+            </p>
+            <div className="flex justify-center lg:justify-start gap-4">
+              <Link
+                to="/login"
+                className="inline-block bg-yellow-500 text-white font-semibold px-6 py-3 rounded-lg
+              hover:bg-yellow-600 transition-colors duration-300 text-base sm:text-lg"
+              >
+                Get Started
+              </Link>
+              <Link
+                to="/features"
+                className="inline-block bg-transparent border-2 border-yellow-500 text-yellow-700
+              font-semibold px-6 py-3 rounded-lg hover:bg-yellow-50 transition-colors duration-300 text-base sm:text-lg"
+              >
+                Explore Features
+              </Link>
+            </div>
+            <div className="mt-6 text-gray-600 text-sm sm:text-base">
+              <p>Why FarmTrack?</p>
+              <ul className="list-disc list-inside space-y-2 mt-2">
+                <li>Real-time monitoring of poultry health and growth metrics</li>
+                <li>Automated egg production tracking and analytics</li>
+                <li>Optimize feed schedules and reduce waste</li>
+                <li>Scalable solutions for small and large poultry farms</li>
+              </ul>
+            </div>
+          </div>
+          {/* Image */}
+          <div className="lg:w-1/2 mt-8 lg:mt-0">
+            <img
+              src={heroimg1}
+              alt="Poultry farm with smart tracking technology"
+              className="w-full h-auto rounded-lg shadow-lg object-cover max-h-[300px] sm:max-h-[300px] lg:max-h-[450px]"
+            />
+            <div className="mt-4 flex justify-center gap-4">
+              <img
+                src={pic}
+                alt="Healthy chickens in farm"
+                className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-md object-cover"
+              />
+              <img
+                src={heroimg1}
+                alt="FarmTrack dashboard preview"
+                className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-md object-cover"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- NEW CONTENT STARTS HERE --- */}
+
+      {/* Key Features Overview Section */}
+      <section className="bg-gray-50 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-12">
+            Features Designed to Boost Your Profit 📈
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {/* Feature Card 1: Health & Mortality Tracking */}
+            <div className="bg-white p-6 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+              <div className="text-yellow-500 text-3xl mb-4">🩺</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Flock Health Management</h3>
+              <p className="text-gray-600">
+                Track **daily mortality and disease events** effortlessly. Get timely alerts and detailed reports to minimize losses and ensure early intervention, keeping your flock in optimal condition.
+              </p>
+            </div>
+            {/* Feature Card 2: Financial Reporting */}
+            <div className="bg-white p-6 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+              <div className="text-yellow-500 text-3xl mb-4">💰</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Financial Analytics</h3>
+              <p className="text-gray-600">
+                Monitor **income and expenses** directly related to your farm. Visualize your profitability with intuitive charts, helping you make data-driven decisions on where to invest or cut costs.
+              </p>
+            </div>
+            {/* Feature Card 3: Inventory Management */}
+            <div className="bg-white p-6 rounded-lg shadow-xl hover:shadow-2xl transition duration-300">
+              <div className="text-yellow-500 text-3xl mb-4">📦</div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Feed & Resource Control</h3>
+              <p className="text-gray-600">
+                Keep a real-time count of your **feed, medication, and supply inventory**. Set automated reminders for low stock to avoid costly delays and ensure continuous operation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- */}
+
+      {/* Testimonials/Social Proof Section */}
+      <section className="bg-white py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl font-extrabold text-gray-900 text-center mb-12">
+            Trusted by Farmers Worldwide 🌍
+          </h2>
+          <div className="space-y-8">
+            <blockquote className="bg-yellow-50 p-6 rounded-lg shadow-inner border-l-4 border-yellow-500">
+              <p className="text-lg italic text-gray-700">
+                "Since implementing FarmTrack, our egg production analysis has become effortless. We've reduced feed waste by 15% in the first quarter alone! It's an indispensable tool."
+              </p>
+              <footer className="mt-4">
+                <p className="font-semibold text-yellow-700">— Kwame A., Large-Scale Layer Farm Owner</p>
+              </footer>
+            </blockquote>
+            <blockquote className="bg-yellow-50 p-6 rounded-lg shadow-inner border-l-4 border-yellow-500">
+              <p className="text-lg italic text-gray-700">
+                "The health tracking alerts have been a lifesaver. We catch issues so much faster now. FarmTrack truly scales with our small broiler operation."
+              </p>
+              <footer className="mt-4">
+                <p className="font-semibold text-yellow-700">— Sarah M., Family Poultry Business</p>
+              </footer>
+            </blockquote>
+          </div>
+          {/* Optional: Add a small client logo bar here */}
+          {/* <div className="mt-12 flex justify-center items-center gap-8">
+            <img src={clientLogo1} alt="Client Logo 1" className="h-8 grayscale opacity-50"/>
+            <img src={clientLogo2} alt="Client Logo 2" className="h-8 grayscale opacity-50"/>
+          </div> */}
+        </div>
+      </section>
+
+      {/* --- */}
+
+      {/* Call to Action (CTA) Section - Repeats CTA for conversion */}
+      <section className="bg-yellow-700 py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4">
+            Ready to Revolutionize Your Farm?
+          </h2>
+          <p className="text-xl text-yellow-100 mb-8">
+            Join thousands of successful poultry farmers who are increasing efficiency and boosting profits with FarmTrack.
           </p>
-          <div className="flex justify-center lg:justify-start gap-4">
-            <Link
-              to="/login"
-              className="inline-block bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg 
-              hover:bg-blue-700 transition-colors duration-300 text-base sm:text-lg"
-            >
-              Get Started
-            </Link>
-            <Link
-              to="/features"
-              className="inline-block bg-transparent border-2 border-blue-600 text-blue-600 
-              font-semibold px-6 py-3 rounded-lg hover:bg-blue-50 transition-colors duration-300 text-base sm:text-lg"
-            >
-              Explore Features
-            </Link>
-          </div>
-          <div className="mt-6 text-gray-600 text-sm sm:text-base">
-            <p>Why FarmTrack?</p>
-            <ul className="list-disc list-inside space-y-2 mt-2">
-              <li>Real-time monitoring of poultry health and growth metrics</li>
-              <li>Automated egg production tracking and analytics</li>
-              <li>Optimize feed schedules and reduce waste</li>
-              <li>Scalable solutions for small and large poultry farms</li>
-            </ul>
-          </div>
+          <Link
+            to="/signup"
+            className="inline-block bg-white text-yellow-700 font-bold px-10 py-4 rounded-full 
+            shadow-lg hover:bg-gray-100 transition-colors duration-300 text-lg sm:text-xl transform hover:scale-105"
+          >
+            Start Your Free Trial Today!
+          </Link>
         </div>
-        {/* Image */}
-        <div className="lg:w-1/2 mt-8 lg:mt-0">
-          <img
-            src={heroImage}
-            alt="Poultry farm with smart tracking technology"
-            className="w-full h-auto rounded-lg shadow-lg object-cover max-h-[400px] sm:max-h-[500px] lg:max-h-[600px]"
-          />
-          <div className="mt-4 flex justify-center gap-4">
-            <img
-              src={pic}
-              alt="Healthy chickens in farm"
-              className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-md object-cover"
-            />
-            <img
-              src={heroImage}
-              alt="FarmTrack dashboard preview"
-              className="w-24 h-24 sm:w-32 sm:h-32 rounded-full shadow-md object-cover"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-    <FooterSection />
+      </section>
+
+      {/* --- NEW CONTENT ENDS HERE --- */}
+      
+      <FooterSection />
     </div>
   );
 };
