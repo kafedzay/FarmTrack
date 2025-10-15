@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, Link } from "react-router-dom";
 import { FaArrowLeft, FaHome, FaChartBar, FaSignOutAlt } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
 import { GrClose, GrMoney } from "react-icons/gr";
@@ -110,13 +110,13 @@ export default function Sidebar() {
       >
         <div className="flex items-center justify-between p-4">
           {!isCollapsed && (
-            <NavLink
+            <button
               onClick={() => navigate("/")}
-              className="text-2xl font-semibold tracking-tight text-left hover:cursor"
+              className="text-2xl font-semibold tracking-tight text-left hover:text-[#f9e669] "
               aria-label="Go Home"
             >
               FarmTrack
-            </NavLink>
+            </button>
           )}
           <button
             className="p-2 hidden md:block rounded-md hover:bg-[#a57800]/80 transition-all duration-200"
