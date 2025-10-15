@@ -30,11 +30,10 @@ const Navbar = () => {
           <div className="flex-shrink-0">
             <Link
               to="/"
-              className={`text-3xl lg:text-4xl font-extrabold tracking-tight transition-all duration-300 ease-in-out transform hover:scale-120 ${
-                location.pathname === "/"
+              className={`text-3xl lg:text-4xl font-extrabold tracking-tight transition-all duration-300 ease-in-out transform hover:scale-120 ${location.pathname === "/"
                   ? "text-[#d4a017] "
                   : "hover:text-[#b58900]"
-              }`}
+                }`}
               aria-label="FarmTrack Home"
             >
               FarmTrack
@@ -48,10 +47,9 @@ const Navbar = () => {
                 key={item.name}
                 to={item.href}
                 className={({ isActive }) =>
-                  `flex items-center space-x-4 text-base font-semibold transition-all duration-300 ease-in-out transform hover:scale-120 hover:text-[#b58900] group ${
-                    isActive
-                      ? "text-[#d4a017] border-b-4 border-[#d4a017]"
-                      : ""
+                  `flex items-center space-x-4 text-base font-semibold transition-all duration-300 ease-in-out transform hover:scale-120 hover:text-[#b58900] group ${isActive
+                    ? "text-[#d4a017] border-b-4 border-[#d4a017]"
+                    : ""
                   }`
                 }
                 aria-label={item.name}
@@ -91,8 +89,7 @@ const Navbar = () => {
                 key={item.name}
                 to={item.href}
                 className={({ isActive }) =>
-                  `flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-[#fffbe6] hover:text-[#b58900] ${
-                    isActive ? "bg-[#fffbe6] text-[#d4a017] shadow-md" : ""
+                  `flex items-center space-x-3 px-3 py-2 rounded-lg text-base font-medium transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-[#fffbe6] hover:text-[#b58900] ${isActive ? "bg-[#fffbe6] text-[#d4a017] shadow-md" : ""
                   }`
                 }
                 onClick={() => setIsOpen(false)}
