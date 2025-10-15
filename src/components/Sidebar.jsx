@@ -75,10 +75,10 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile Navbar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-[#b58900] text-white h-14 flex items-center justify-between px-4 z-50 shadow-md">
+      {/* Mobile Navbar: Changed to use a dark background for better contrast with the white sidebar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 bg-gray-800 text-white h-14 flex items-center justify-between px-4 z-50 shadow-md">
         <button
-          className="p-2 rounded-md hover:bg-[#a57800]/80 transition-all duration-200 ease-in-out"
+          className="p-2 rounded-md hover:bg-gray-700 transition-all duration-200 ease-in-out"
           onClick={toggleMobileMenu}
           aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
           aria-expanded={isMobileMenuOpen}
@@ -101,25 +101,26 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Sidebar */}
+      {/* Sidebar: Changed to white background (bg-white) and dark text (text-gray-800) */}
       <div
         className={`bg-[#b58900] text-white shadow-lg transition-all duration-300 ease-in-out
-          ${isCollapsed ? "w-16" : "w-64"}
-          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 fixed z-40 top-14 md:top-0 h-[calc(100vh-3.5rem)] md:h-screen flex flex-col`}
+          ${isCollapsed ? "w-16" : "w-64"} 
+          ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"} 
+          md:translate-x-0 fixed md:static z-40 top-14 md:top-0 h-[calc(100vh-3.5rem)] md:h-screen flex flex-col`}
       >
         <div className="flex items-center justify-between p-4">
+          {/* Logo/Title: Used yellowish color for the title */}
           {!isCollapsed && (
             <button
               onClick={() => navigate("/")}
-              className="text-2xl font-semibold tracking-tight text-left hover:text-[#f9e669] "
+              className="text-2xl font-semibold tracking-tight text-left hover:cursor"
               aria-label="Go Home"
             >
               FarmTrack
             </button>
           )}
           <button
-            className="p-2 hidden md:block rounded-md hover:bg-[#a57800]/80 transition-all duration-200"
+            className="p-2 hidden md:block rounded-md text-gray-500 hover:text-white hover:bg-[#b58900]/90 transition-all duration-200"
             onClick={toggleSidebar}
             aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
@@ -143,21 +144,34 @@ export default function Sidebar() {
               onClick={closeMobileMenu}
               aria-label={page.label}
             >
-              <span className="text-xl">{page.icon}</span>
+              {/* Icon Color: Used yellowish color for icons when not active, white when active */}
+              <span
+                className={`text-xl ${({ isActive }) =>
+                  isActive ? "text-white" : "text-[#b58900]"}`}
+              >
+                {page.icon}
+              </span>
               {!isCollapsed && <span className="ml-4">{page.label}</span>}
             </NavLink>
           ))}
         </nav>
-        {/* Logout Button */}
+        {/* Logout Section */}
         <div className="p-4 mt-auto">
-          {/* <h1 className="font-bold">Welcome {user?.name} 👋</h1> */}
           <button
-            className="flex items-center p-3 mx-2 rounded-md text-base font-medium transition-all duration-200 ease-in-out hover:bg-[#a57800]/80 w-full text-left"
             onClick={handleLogout}
             aria-label="Logout"
+            className="group flex items-center w-full p-3 rounded-lg text-base font-semibold 
+               bg-white text-gray-700 shadow-sm transition-all duration-300 ease-in-out 
+               hover:bg-[#a57800]/90 hover:text-white hover:shadow-md focus:outline-none 
+               focus:ring-2 focus:ring-[#a57800] focus:ring-offset-2"
           >
-            <FaSignOutAlt className="text-xl" />
-            {!isCollapsed && <span className="ml-4">Logout</span>}
+            {/* Icon with smooth color transition */}
+            <FaSignOutAlt className="text-xl text-[#b58900] transition-colors duration-300 group-hover:text-white" />
+            {!isCollapsed && (
+              <span className="ml-4 transition-transform duration-300 group-hover:translate-x-1">
+                Logout
+              </span>
+            )}
           </button>
         </div>
       </div>
